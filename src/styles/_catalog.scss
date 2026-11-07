@@ -1,0 +1,232 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ===== Зображення товару (емодзі-заглушка або фото) =====
+.pimg {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  overflow: hidden;
+  img { width: 100%; height: 100%; object-fit: cover, center; }
+}
+
+.pimg__emoji { font-size: clamp(3rem, 9vw, 4.5rem); line-height: 1; }
+
+// ===== Ціна =====
+.price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+
+  b { font-size: 1.15rem; color: $c-text; }
+  &--lg b { font-size: 1.8rem; color: $c-primary-dark; }
+}
+
+.price__unit { color: $c-muted; font-size: 0.85rem; }
+.price__old { color: $c-muted; font-size: 0.85rem; }
+
+// ===== Сітка та картка товару =====
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 16px;
+
+  @include up($bp-lg) { gap: 20px; }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid $c-border;
+  border-radius: $radius;
+  background: $c-surface;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover { box-shadow: $shadow; transform: translateY(-2px); }
+}
+
+.card__media {
+  position: relative;
+  display: block;
+
+  .pimg { aspect-ratio: 4 / 3; }
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: $c-sale;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+}
+
+.card__cat {
+  color: $c-primary;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card__title {
+  font-size: 1rem;
+  line-height: 1.3;
+  @include clamp-lines(2);
+
+  a:hover { color: $c-primary; }
+}
+
+.card__desc {
+  color: $c-muted;
+  font-size: 0.875rem;
+  @include clamp-lines(3);
+}
+
+.card__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+// ===== Сторінка каталогу =====
+.catalog {
+  display: grid;
+  gap: 20px;
+
+  @include up($bp-lg) { grid-template-columns: 250px 1fr; gap: 32px; align-items: start; }
+}
+
+.catalog__side {
+  padding: 16px;
+  border: 1px solid $c-border;
+  border-radius: $radius;
+  background: $c-surface;
+
+  @include up($bp-lg) { position: sticky; top: 140px; }
+}
+
+.side__title { margin-bottom: 8px; font-size: 1.05rem; }
+
+.side__list {
+  // на мобільному — розділи в ряд, що гортається
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  > li { display: contents; }
+
+  a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: $radius-sm;
+    &:hover { background: $c-primary-soft; }
+    &.active { background: $c-primary-soft; color: $c-primary-dark; font-weight: 700; }
+  }
+
+  ul { display: contents; }
+  ul a { font-size: 0.9rem; color: $c-muted; }
+
+  @include up($bp-lg) {
+    display: block;
+
+    > li { display: block; }
+    ul { display: block; padding-left: 12px; }
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border: 1px solid $c-border;
+  border-radius: $radius;
+  background: $c-surface;
+}
+
+.toolbar__count { margin-right: auto; color: $c-muted; }
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  input { width: 18px; height: 18px; accent-color: $c-primary; }
+}
+
+.select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  select {
+    min-height: 40px;
+    padding: 0 10px;
+    border: 1px solid $c-border;
+    border-radius: $radius-sm;
+    background: $c-bg;
+  }
+}
+
+// ===== Сторінка товару =====
+.product {
+  display: grid;
+  gap: 24px;
+
+  @include up($bp-md) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+}
+
+.product__img {
+  aspect-ratio: 1;
+  border-radius: $radius;
+  border: 1px solid $c-border;
+
+  .pimg__emoji { font-size: clamp(6rem, 22vw, 11rem); }
+}
+
+.product__info { display: flex; flex-direction: column; gap: 12px; }
+.product__desc { color: $c-muted; font-size: 1.02rem; }
+
+.product__buy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-block: 6px;
+}
+
+.product__h { margin-top: 12px; font-size: 1.15rem; }
+
+.specs {
+  width: 100%;
+  border-collapse: collapse;
+  background: $c-surface;
+  border: 1px solid $c-border;
+  border-radius: $radius-sm;
+  overflow: hidden;
+
+  th, td { padding: 10px 14px; border-bottom: 1px solid $c-border; text-align: left; vertical-align: top; }
+  th { width: 42%; color: $c-muted; font-weight: 500; background: $c-bg; }
+  tr:last-child { th, td { border-bottom: 0; } }
+}
