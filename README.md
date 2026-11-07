@@ -3,11 +3,12 @@
 Адаптивний демонстраційний магазин на React + Vite. У каталозі є розділи «Ремонт», «Техніка для кухні» та «Посуд».
 
 ## Запуск
-```bash
-npm ci
-npm run dev
-npm run build
-npm run preview
+``` 
+"clean": "rimraf dist",
+"dev": "vite",
+"build": "vite build",
+"preview": "vite preview",
+"deploy": "gh-pages -d dist"
 ```
 
 ## Де редагувати
