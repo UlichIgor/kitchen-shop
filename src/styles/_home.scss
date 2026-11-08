@@ -3,10 +3,9 @@
 
 .hero {
   color: #fff;
-  background:
-    radial-gradient(circle at 85% 20%, rgba(#fdba74, 0.35), transparent 45%),
-    radial-gradient(circle at 10% 90%, rgba(#fff, 0.12), transparent 40%),
-    linear-gradient(135deg, $c-primary 0%, $c-primary-dark 55%, #7c2d12 100%);
+background-image: ()linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/img/hero-bg.jpg");
+  background-size: cover;
+  background-position: center;
 }
 
 .hero__inner {
