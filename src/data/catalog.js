@@ -71,70 +71,98 @@ export const PRODUCTS = [
     desc: "Зносостійкий лінолеум з принтом під дерево. Легкий монтаж, просте прибирання, комфортний на дотик.",
     specs: [["Ширина рулону", "3 м"], ["Товщина", "2,5 мм"], ["Захисний шар", "0,3 мм"]],
   },
+  {
+    id: 4, section: "remont", sub: "pidloga",
+    name: "Побутовий лінолеум LINOPLAST Комфорт Дошка 082-2 3,5м»",
+    price: 285, unit: "м²", image: "/img/LINOPLAST Comfort Plank 082-2 Residential Linoleum, 3.5 m.png", color: "#efe6d8",
+    desc: "LINOPLAST Comfort Plank (Дошка) 082-2, ширина 3.5 м - це побутовий лінолеум під дизайн дерев'яної дошки, призначений для житлових приміщень. Він має приємну текстуру та кольорову гаму, що імітує натуральне дерево, створюючи затишну атмосферу в кімнаті.",
+    specs: [["Ширина рулону", "3.5 м"], ["Товщина", "2,5 мм"], ["Захисний шар", "0,15 мм"]],
+  },
+  {
+    id: 5, section: "remont", sub: "pidloga",
+    name: "Ковролін на клейовій основі Сірий 600*600*4,5мм ковролінова плитка для будинку підлогове покриття з ворсом»",
+    price: 385, unit: "м²", image: "/img/Self-adhesive grey carpet tiles (600×600×4.5 mm) – pile flooring for the home.png", color: "#efe6d8",
+    desc: "LINOPLAST Comfort Plank (Дошка) 082-2, ширина 3.5 м - це побутовий лінолеум під дизайн дерев'яної дошки, призначений для житлових приміщень. Він має приємну текстуру та кольорову гаму, що імітує натуральне дерево, створюючи затишну атмосферу в кімнаті.",
+    specs: [["Ширина рулону", "0.6 м"], ["Товщина", "4,5 мм"], ["Захисний шар", "0,6 мм"]],
+  },
 
   /* ---------- РЕМОНТ → СТЕЛЯ ---------- */
   {
-    id: 4, section: "remont", sub: "stelya",
+    id: 6, section: "remont", sub: "stelya",
     name: "Фарба для стель, біла матова 10 л",
     price: 1190, image: "/img/Ceiling paint.png", color: "#f4f6fb",
     desc: "Акрилова фарба з високою укривністю, що маскує дрібні нерівності. Не жовтіє з часом, швидко висихає.",
     specs: [["Об’єм", "10 л"], ["Витрата", "8–10 м²/л"], ["Колір", "Білий"], ["Блиск", "Глибокоматовий"]],
   },
   {
-    id: 5, section: "remont", sub: "stelya",
+    id: 7, section: "remont", sub: "stelya",
     name: "Підвісна стеля «Армстронг» 600×600 (комплект)",
     price: 1450, oldPrice: 1690, image: "/img/Armstrong suspended ceiling.png", color: "#e8ecf2",
     desc: "Комплект плит і каркаса для швидкого монтажу підвісної стелі. Дозволяє сховати комунікації та вбудувати світильники.",
     specs: [["Розмір плити", "600×600 мм"], ["Площа комплекту", "до 5 м²"], ["Каркас", "Оцинкована сталь"]],
   },
   {
-    id: 6, section: "remont", sub: "stelya",
+    id: 8, section: "remont", sub: "stelya",
     name: "Плінтус стельовий поліуретановий 2 м",
     price: 135, image: "/img/Polyurethane ceiling molding 2 m.png", color: "#fff7ea",
     desc: "Легкий декоративний плінтус для охайного стику стелі та стін. Не вбирає вологу, не боїться перепадів температури.",
     specs: [["Довжина", "2 м"], ["Матеріал", "Поліуретан"], ["Висота", "50 мм"]],
   },
+  {
+    id: 9, section: "remont", sub: "stelya",
+    name: "Підвісна стеля грильято стандарт чорна ячейка 200х200 мм",
+    price: 135, image: "/img/Standard black Grigliato suspended ceiling, 200x200 mm cell size.png", color: "#fff7ea",
+    desc: "Підвісна стеля грильято оптимальне рішення для торгових центрах, магазинах, бізнес- центрах, офісах.",
+    specs: [["Касета грильято (600х600)-2,8шт"], ["Несучий профіль (2400 мм)-0,84м"], [" Профіль (1200 мм) – 1,66 м Профіль (600 мм) – 0,83 м Сполучний елемент-0,28шт"]],
+  },
 
   /* ---------- РЕМОНТ → СТІНИ ---------- */
   {
-    id: 7, section: "remont", sub: "stiny",
+    id: 10, section: "remont", sub: "stiny",
     name: "Фарба миюча для кухні, база A, 5 л",
     price: 1390, image: "/img/Washable paint for kitchens, Base A, 5 L.png", color: "#e0f2fe",
     desc: "Стійка до миття акрилова фарба для стін. Її можна колерувати у будь-який відтінок, поверхня легко очищується від жиру.",
     specs: [["Об’єм", "5 л"], ["Витрата", "10–12 м²/л"], ["Миття", "Клас 1"], ["Колеровка", "Так"]],
   },
   {
-    id: 8, section: "remont", sub: "stiny",
+    id: 11, section: "remont", sub: "stiny",
     name: "Шпалери вінілові вологостійкі «Лофт»",
     price: 420, image: "/img/moisture-resistant vinyl wallpaper.png", color: "#e7e5e4",
     desc: "Вінілові шпалери на флізеліновій основі з текстурою під бетон. Придатні для вологого прання.",
     specs: [["Розмір рулону", "1,06×10 м"], ["Основа", "Флізелін"], ["Догляд", "Вологе прання"]],
   },
   {
-    id: 9, section: "remont", sub: "stiny",
+    id: 12, section: "remont", sub: "stiny",
     name: "Кухонний фартух з ПВХ-панелей (комплект)",
     price: 780, oldPrice: 920, image: "/img/Kitchen backsplash made of PVC panels (set).png", color: "#fde68a",
     desc: "Практичні панелі для захисту стіни біля робочої зони. Легко монтуються, не бояться води та жиру.",
     specs: [["Матеріал", "ПВХ"], ["Розмір панелі", "960×480 мм"], ["Комплект", "6 панелей"]],
   },
+  {
+    id: 13, section: "remont", sub: "stiny",
+    name: "Декоративна ПВХ панель 960х480х4мм SW-00001839",
+    price: 780, oldPrice: 920, image: "/img/Decorative PVC panel 960x480x4mm SW-00001839.png", color: "#fde68a",
+    desc: "Панелі ПВХ - виготовлені на сучасному обладнанні із високоякісних, стійких, нешкідливих для здоров'я фарб. За допомогою панелей ПВХ ви легко реалізуєте всі Ваші будь-які дизайнерські рішення як у житлових, так і в комерційних приміщеннях",
+    specs: [["Матеріал", "ПВХ"], ["Розмір ПВХ панелі – 960ммх480мм"], ["Товщина – 4 мм"]],
+  },
 
   /* ---------- ТЕХНІКА → ГАЗОВІ ПЛИТИ ---------- */
   {
-    id: 10, section: "tekhnika", sub: "gazovi-plyty",
+    id: 14, section: "tekhnika", sub: "gazovi-plyty",
     name: "Газова плита 50 см, 4 конфорки, духовка з грилем",
     price: 12990, oldPrice: 14490, image: "/img/50 cm gas stove, 4 burners, oven with grill.png", color: "#fee2e2",
     desc: "Класична плита з газовою духовкою та грилем. Електропідпалювання, чавунні решітки, газ-контроль для безпеки.",
     specs: [["Ширина", "50 см"], ["Конфорки", "4 газові"], ["Духовка", "Газова, 58 л"], ["Газ-контроль", "Так"]],
   },
   {
-    id: 11, section: "tekhnika", sub: "gazovi-plyty",
+    id: 15, section: "tekhnika", sub: "gazovi-plyty",
     name: "Газова плита 60 см, нержавіюча сталь",
     price: 18900, image: "/img/60 cm gas stove, stainless steel.png", color: "#e5e7eb",
     desc: "Просторий корпус із нержавійки, електрична духовка з конвекцією та 5 режимами нагріву. Плита легко миється.",
     specs: [["Ширина", "60 см"], ["Конфорки", "4 газові"], ["Духовка", "Електрична, 65 л"], ["Конвекція", "Так"]],
   },
   {
-    id: 12, section: "tekhnika", sub: "gazovi-plyty",
+    id: 16, section: "tekhnika", sub: "gazovi-plyty",
     name: "Варильна поверхня газова вбудована 60 см",
     price: 7490, image: "/img/Built-in gas cooktop 60 cm.png", color: "#ffedd5",
     desc: "Скляна варильна поверхня для вбудовування в стільницю. Чотири конфорки, чавунні решітки, електропідпалювання.",
@@ -143,21 +171,21 @@ export const PRODUCTS = [
 
   /* ---------- ТЕХНІКА → ХОЛОДИЛЬНИКИ ---------- */
   {
-    id: 13, section: "tekhnika", sub: "kholodylnyky",
+    id: 17, section: "tekhnika", sub: "kholodylnyky",
     name: "Холодильник двокамерний No Frost 185 см",
     price: 21990, oldPrice: 24500, image: "/img/185 cm No Frost two-compartment refrigerator.png", color: "#dbeafe",
     desc: "Двокамерний холодильник із системою No Frost без розморожування. Нижня морозильна камера та велика зона свіжості.",
     specs: [["Висота", "185 см"], ["Об’єм", "345 л"], ["No Frost", "Так"], ["Клас енергоспоживання", "A+"]],
   },
   {
-    id: 14, section: "tekhnika", sub: "kholodylnyky",
+    id: 18, section: "tekhnika", sub: "kholodylnyky",
     name: "Холодильник Side-by-Side 178 см",
     price: 42990, image: "/img/178 cm Side-by-Side Refrigerator.png", color: "#e0e7ff",
     desc: "Двостулковий холодильник великої місткості з диспенсером для води. Ідеальний для великої родини.",
     specs: [["Висота", "178 см"], ["Об’єм", "560 л"], ["Диспенсер води", "Так"], ["Дисплей", "Сенсорний"]],
   },
   {
-    id: 15, section: "tekhnika", sub: "kholodylnyky",
+    id: 19, section: "tekhnika", sub: "kholodylnyky",
     name: "Холодильник компактний 85 см",
     price: 8490, image: "/img/Compact 85 cm refrigerator.png", color: "#cffafe",
     desc: "Невеликий однокамерний холодильник для маленької кухні, офісу чи дачі. Тихий та економний.",
@@ -166,14 +194,14 @@ export const PRODUCTS = [
 
   /* ---------- ТЕХНІКА → ПОСУДОМИЙНІ МАШИНИ ---------- */
   {
-    id: 16, section: "tekhnika", sub: "posudomyyni",
+    id: 20, section: "tekhnika", sub: "posudomyyni",
     name: "Посудомийна машина 60 см, 14 комплектів",
     price: 16990, image: "/img/60 cm dishwasher, 14 place settings.png", color: "#e0f2fe",
     desc: "Вмістка машина з інверторним двигуном, 6 програмами та режимом швидкого миття. Тихо працює вночі.",
     specs: [["Ширина", "60 см"], ["Місткість", "14 комплектів"], ["Програми", "6"], ["Рівень шуму", "44 дБ"]],
   },
   {
-    id: 17, section: "tekhnika", sub: "posudomyyni",
+    id: 21, section: "tekhnika", sub: "posudomyyni",
     name: "Посудомийна машина вузька 45 см, вбудована",
     price: 14490, oldPrice: 15990, image: "/img/Narrow 45 cm built-in dishwasher.png", color: "#ccfbf1",
     desc: "Вузька вбудована модель для компактних кухонь. Захист від протікання, відкладений старт, економний режим.",
@@ -182,21 +210,21 @@ export const PRODUCTS = [
 
   /* ---------- ТЕХНІКА → ВИТЯЖКИ ---------- */
   {
-    id: 18, section: "tekhnika", sub: "vytyazhky",
+    id: 22, section: "tekhnika", sub: "vytyazhky",
     name: "Витяжка похила 60 см, чорне скло",
     price: 6990, image: "/img/60 cm angled range hood, black glass.png", color: "#e5e7eb",
     desc: "Похила витяжка з сенсорним керуванням і яскравим LED-підсвічуванням. Працює у режимах відведення та рециркуляції.",
     specs: [["Ширина", "60 см"], ["Продуктивність", "650 м³/год"], ["Керування", "Сенсорне"], ["Підсвічування", "LED"]],
   },
   {
-    id: 19, section: "tekhnika", sub: "vytyazhky",
+    id: 23, section: "tekhnika", sub: "vytyazhky",
     name: "Витяжка купольна 90 см, нержавіюча сталь",
     price: 9990, oldPrice: 11500, image: "/img/90 cm canopy range hood, stainless steel.png", color: "#f1f5f9",
     desc: "Потужна купольна витяжка для великих плит. Металеві жиропоглинальні фільтри можна мити в посудомийній машині.",
     specs: [["Ширина", "90 см"], ["Продуктивність", "850 м³/год"], ["Швидкості", "3"], ["Фільтри", "Металеві"]],
   },
   {
-    id: 20, section: "tekhnika", sub: "vytyazhky",
+    id: 24, section: "tekhnika", sub: "vytyazhky",
     name: "Вбудована витяжка телескопічна 60 см",
     price: 5290, image: "/img/Built-in telescopic range hood 60 cm.png", color: "#fef3c7",
     desc: "Прихована в шафі витяжка з висувною панеллю. Майже непомітна у вимкненому стані та економить місце.",
@@ -205,21 +233,21 @@ export const PRODUCTS = [
 
   /* ---------- ПОСУД → КАСТРУЛІ ТА СКОВОРІДКИ ---------- */
   {
-    id: 21, section: "posud", sub: "kastruli",
+    id: 25, section: "posud", sub: "kastruli",
     name: "Набір каструль із нержавіючої сталі, 6 предметів",
     price: 2890, oldPrice: 3490, image: "/img/Stainless steel cookware set, 6 pieces.png", color: "#e5e7eb",
     desc: "Набір з товстим капсульним дном і скляними кришками. Підходить для газових, електричних та індукційних плит.",
     specs: [["Кількість предметів", "6"], ["Матеріал", "Нержавіюча сталь 18/10"], ["Індукція", "Так"]],
   },
   {
-    id: 22, section: "posud", sub: "kastruli",
+    id: 26, section: "posud", sub: "kastruli",
     name: "Сковорідка з антипригарним покриттям 28 см",
     price: 749, image: "/img/Non-stick frying pan 28 cm.png", color: "#fde68a",
     desc: "Легка сковорідка з міцним мармуровим покриттям і зручною ручкою. Готуйте з мінімумом олії.",
     specs: [["Діаметр", "28 см"], ["Покриття", "Мармурове"], ["Індукція", "Так"]],
   },
   {
-    id: 23, section: "posud", sub: "kastruli",
+    id: 27, section: "posud", sub: "kastruli",
     name: "Чавунна гусятниця 4 л з кришкою",
     price: 2190, image: "/img/4 L cast-iron roaster with lid.png", color: "#d6d3d1",
     desc: "Важка емальована гусятниця для тушкування та запікання. Рівномірно тримає тепло, чудова для рагу.",
@@ -228,14 +256,14 @@ export const PRODUCTS = [
 
   /* ---------- ПОСУД → ТАРІЛКИ ТА СЕРВІЗИ ---------- */
   {
-    id: 24, section: "posud", sub: "tarilky",
+    id: 28, section: "posud", sub: "tarilky",
     name: "Столовий сервіз із кераміки на 6 персон, 18 предметів",
     price: 2390, image: "/img/Ceramic dinnerware set for 6 people, 18 pieces.png", color: "#fae8ff",
     desc: "Комплект глибоких, мілких та десертних тарілок. Міцна кераміка, можна використовувати в мікрохвильовій печі та мити в посудомийці.",
     specs: [["Предметів", "18"], ["Матеріал", "Кераміка"], ["Мікрохвильова піч", "Так"]],
   },
   {
-    id: 25, section: "posud", sub: "tarilky",
+    id: 29, section: "posud", sub: "tarilky",
     name: "Набір салатників скляних, 3 шт.",
     price: 590, image: "/img/Set of glass salad bowls, 3 pcs..png", color: "#dcfce7",
     desc: "Три прозорі салатники різного розміру з загартованого скла. Зручні для подачі та зберігання.",
@@ -244,14 +272,14 @@ export const PRODUCTS = [
 
   /* ---------- ПОСУД → СКЛЯНКИ ТА ЧАШКИ ---------- */
   {
-    id: 26, section: "posud", sub: "sklo",
+    id: 30, section: "posud", sub: "sklo",
     name: "Набір склянок для води, 6 шт.",
     price: 349, image: "/img/Set of water glasses, 6 pcs..png", color: "#e0f2fe",
     desc: "Прозорі склянки з товстим дном, що добре тримаються у руці. Безпечні для миття в посудомийній машині.",
     specs: [["Предметів", "6"], ["Об’єм", "300 мл"], ["Матеріал", "Скло"]],
   },
   {
-    id: 27, section: "posud", sub: "sklo",
+    id: 31, section: "posud", sub: "sklo",
     name: "Чашки порцелянові з блюдцями, 6 шт.",
     price: 990, oldPrice: 1190, image: "/img/Porcelain cups with saucers, 6 pcs.png", color: "#ffedd5",
     desc: "Витончені порцелянові чашки для кави та чаю. Класична форма й гладка глазур.",
@@ -260,14 +288,14 @@ export const PRODUCTS = [
 
   /* ---------- ПОСУД → НОЖІ ТА ПРИЛАДДЯ ---------- */
   {
-    id: 28, section: "posud", sub: "nozhi",
+    id: 32, section: "posud", sub: "nozhi",
     name: "Набір кухонних ножів на підставці, 6 предметів",
     price: 1790, image: "/img/Kitchen knife set with stand, 6 pieces.png", color: "#e5e7eb",
     desc: "Набір гострих ножів зі сталі та дерев’яна підставка. У комплекті ніж шефа, хлібний, універсальний та ножиці.",
     specs: [["Предметів", "6"], ["Сталь", "Нержавіюча"], ["Підставка", "Бук"]],
   },
   {
-    id: 29, section: "posud", sub: "nozhi",
+    id: 33, section: "posud", sub: "nozhi",
     name: "Обробна дошка з бука 40×28 см",
     price: 450, image: "/img/Beech cutting board 40×28 cm.png", color: "#f3e2c7",
     desc: "Масивна дерев’яна дошка з жолобом для соку. Бережно відноситься до лез ножів.",
@@ -276,14 +304,14 @@ export const PRODUCTS = [
 
   /* ---------- ПОСУД → КОНТЕЙНЕРИ ---------- */
   {
-    id: 30, section: "posud", sub: "kontejnery",
+    id: 34, section: "posud", sub: "kontejnery",
     name: "Набір скляних контейнерів із кришками, 5 шт.",
     price: 1190, oldPrice: 1390, image: "/img/Set of glass containers with lids, 5 pcs.png", color: "#ccfbf1",
     desc: "Герметичні контейнери для зберігання та розігріву їжі. Придатні для духовки, мікрохвильовки та холодильника.",
     specs: [["Предметів", "5"], ["Матеріал", "Жароміцне скло"], ["Кришка", "Герметична"]],
   },
   {
-    id: 31, section: "posud", sub: "kontejnery",
+    id: 35, section: "posud", sub: "kontejnery",
     name: "Банки для сипучих продуктів, 4 шт.",
     price: 520, image: "/img/Canisters for dry goods, 4 pcs..png", color: "#fef9c3",
     desc: "Банки зі скла та бамбуковими кришками для круп, макаронів, цукру та спецій.",
