@@ -44,7 +44,7 @@ export default function Product() {
           <Price product={product} size="lg" />
           <p className="product__desc">{product.desc}</p>
 
-          <div className="product__buy">
+          {!product.priceOnRequest && <div className="product__buy">
             <div className="qty qty--lg">
               <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Менше">−</button>
               <span>{qty}</span>
@@ -63,7 +63,9 @@ export default function Product() {
             >
               Купити зараз
             </button>
-          </div>
+          </div>}
+
+          {product.priceOnRequest && <p className="product__desc">Щоб дізнатися актуальну вартість, зв’яжіться з нами для консультації.</p>}
 
           {product.specs?.length > 0 && (
             <>
