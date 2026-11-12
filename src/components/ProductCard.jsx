@@ -28,9 +28,13 @@ export default function ProductCard({ product }) {
 
         <div className="card__bottom">
           <Price product={product} />
-          <button type="button" className="btn btn--sm" onClick={() => add(product.id)}>
-            У кошик
-          </button>
+          {product.priceOnRequest ? (
+            <span className="price__unit">Ціну уточнюйте</span>
+          ) : (
+            <button type="button" className="btn btn--sm" onClick={() => add(product.id)}>
+              У кошик
+            </button>
+          )}
         </div>
       </div>
     </article>
