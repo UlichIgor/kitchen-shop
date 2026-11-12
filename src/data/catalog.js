@@ -22,6 +22,26 @@ export const SECTIONS = [
     ],
   },
   {
+    id: "dveri",
+    name: "Двері",
+    emoji: "🚪",
+    desc: "Міжкімнатні та зовнішні двері для квартири й приватного будинку.",
+    subsections: [
+      { id: "mizhkimnatni-dveri", name: "Міжкімнатні двері", emoji: "🚪" },
+      { id: "zovnishni-dveri", name: "Зовнішні двері", emoji: "🏠" },
+    ],
+  },
+  {
+    id: "vikna",
+    name: "Вікна",
+    emoji: "🪟",
+    desc: "Віконні рішення для приватного будинку та квартири.",
+    subsections: [
+      { id: "vikna-dlya-budynku", name: "Вікна для будинку", emoji: "🏡" },
+      { id: "vikna-dlya-kvartyry", name: "Вікна для квартири", emoji: "🏢" },
+    ],
+  },
+  {
     id: "tekhnika",
     name: "Техніка для кухні",
     emoji: "🍳",
