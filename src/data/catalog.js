@@ -14,29 +14,13 @@ export const SECTIONS = [
     id: "remont",
     name: "Ремонт",
     emoji: "🧱",
-    desc: "Матеріали для оновлення кухні: підлога, стеля та стіни.",
+    desc: "Матеріали для ремонту та облаштування будинку й квартири: підлога, стеля, стіни, двері та вікна.",
     subsections: [
       { id: "pidloga", name: "Підлога", emoji: "🪵" },
       { id: "stelya", name: "Стеля", emoji: "⬜" },
       { id: "stiny", name: "Стіни", emoji: "🎨" },
-    ],
-  },
-  {
-    id: "dveri",
-    name: "Двері",
-    emoji: "🚪",
-    desc: "Міжкімнатні та зовнішні двері для квартири й приватного будинку.",
-    subsections: [
       { id: "mizhkimnatni-dveri", name: "Міжкімнатні двері", emoji: "🚪" },
       { id: "zovnishni-dveri", name: "Зовнішні двері", emoji: "🏠" },
-    ],
-  },
-  {
-    id: "vikna",
-    name: "Вікна",
-    emoji: "🪟",
-    desc: "Віконні рішення для приватного будинку та квартири.",
-    subsections: [
       { id: "vikna-dlya-budynku", name: "Вікна для будинку", emoji: "🏡" },
       { id: "vikna-dlya-kvartyry", name: "Вікна для квартири", emoji: "🏢" },
     ],
