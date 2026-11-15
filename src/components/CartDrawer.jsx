@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext.jsx";
 import ProductImage from "./ProductImage.jsx";
 
 const EMPTY_FORM = { name: "", phone: "", address: "", comment: "" };
+const MANAGER_WHATSAPP = "380980998127";
 
 export default function CartDrawer() {
   const { items, total, count, isOpen, closeCart, changeQty, remove, clear } = useCart();
@@ -12,6 +13,7 @@ export default function CartDrawer() {
   const [errors, setErrors] = useState({});
   const [orderId, setOrderId] = useState("");
   const [orderSaved, setOrderSaved] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState("");
 
   // Esc закриває кошик; тло не прокручується, поки кошик відкритий
   useEffect(() => {
@@ -77,8 +79,28 @@ export default function CartDrawer() {
       /* Замовлення все одно не надсилається магазину. */
     }
 
+    const orderDate = new Date(order.date).toLocaleString("uk-UA");
+    const orderLines = order.items.map((item, index) => `${index + 1}. ${item.name} — ${item.qty} шт. × ${money(item.price)} = ${money(item.price * item.qty)}`).join("\n");
+    const message = [
+      `НОВЕ ЗАМОВЛЕННЯ ${order.id}`,
+      `Дата: ${orderDate}`,
+      "",
+      "ТОВАРИ:",
+      orderLines,
+      `Разом: ${money(order.total)}`,
+      "",
+      `Клієнт: ${form.name}`,
+      `Телефон клієнта: ${form.phone}`,
+      `Адреса / доставка: ${form.address}`,
+      form.comment ? `Коментар: ${form.comment}` : "",
+    ].filter(Boolean).join("\n");
+    const waUrl = `https://wa.me/${MANAGER_WHATSAPP}?text=${encodeURIComponent(message)}`;
+
     setOrderSaved(saved);
     setOrderId(order.id);
+    setWhatsappUrl(waUrl);
+    // Відкриваємо WhatsApp у новій вкладці; менеджер отримає повідомлення після натискання «Надіслати» клієнтом.
+    window.open(waUrl, "_blank", "noopener,noreferrer");
     setErrors({});
     clear();
     setForm(EMPTY_FORM);
@@ -97,7 +119,7 @@ export default function CartDrawer() {
           <h2>
             {step === "cart" && "Ваш кошик"}
             {step === "form" && "Оформлення замовлення"}
-            {step === "done" && "Демо-замовлення"}
+            {step === "done" && "Замовлення оформлено"}
           </h2>
           <button type="button" className="icon-btn" onClick={closeCart} aria-label="Закрити кошик">
             ✕
