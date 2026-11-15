@@ -33,9 +33,14 @@ export default function Header() {
           <span />
         </button>
 
-        <Link to="/" className="logo" onClick={closeMenu}>
-          <span className="logo__icon">🍳</span>
-          <span>Все для кухні</span>
+        <Link to="/" className="logo" onClick={closeMenu} aria-label="Kitchen Shop — на головну">
+          <img
+            className="logo__image"
+            src="/kitchen-shop/logo.svg"
+            alt="Kitchen Shop — Все для вашого дому"
+            width="192"
+            height="47"
+          />
         </Link>
 
         <form className="search" onSubmit={onSearch} role="search">
