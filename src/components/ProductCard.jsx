@@ -5,7 +5,7 @@ import ProductImage from "./ProductImage.jsx";
 import Price from "./Price.jsx";
 
 export default function ProductCard({ product }) {
-  const { add } = useCart();
+  const { add, openCart } = useCart();
   const section = getSection(product.section);
   const sub = getSub(product.section, product.sub);
   const discount = product.oldPrice
@@ -31,8 +31,8 @@ export default function ProductCard({ product }) {
           {product.priceOnRequest ? (
             <span className="price__unit">Ціну уточнюйте</span>
           ) : (
-            <button type="button" className="btn btn--sm" onClick={() => add(product.id)}>
-              У кошик
+            <button type="button" className="btn btn--sm" onClick={() => { add(product.id); openCart(); }}>
+              {product.priceEstimated ? "Замовити" : "У кошик"}
             </button>
           )}
         </div>

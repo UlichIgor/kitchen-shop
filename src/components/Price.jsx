@@ -5,6 +5,7 @@ export default function Price({ product, size = "md" }) {
     <span className={`price price--${size}`}>
       <b>{product.priceOnRequest ? "Ціну уточнюйте" : money(product.price)}</b>
       {product.unit && <span className="price__unit"> / {product.unit}</span>}
+      {product.priceEstimated && <span className="price__unit"> · орієнтовна ціна</span>}
       {product.oldPrice && <s className="price__old">{money(product.oldPrice)}</s>}
     </span>
   );

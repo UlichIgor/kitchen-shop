@@ -50,18 +50,15 @@ export default function Product() {
               <span>{qty}</span>
               <button type="button" onClick={() => setQty((q) => Math.min(99, q + 1))} aria-label="Більше">+</button>
             </div>
-            <button type="button" className="btn" onClick={() => add(product.id, qty)}>
-              Додати в кошик
-            </button>
             <button
               type="button"
-              className="btn btn--ghost"
+              className="btn"
               onClick={() => {
                 add(product.id, qty);
                 openCart();
               }}
             >
-              Купити зараз
+              {product.priceEstimated ? "Замовити" : "Додати в кошик"}
             </button>
           </div>}
 
