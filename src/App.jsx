@@ -26,6 +26,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/catalog" element={<Catalog />} />
+          <Route path="/sales" element={<Catalog salesMode />} />
           <Route path="/catalog/:sectionId" element={<Catalog />} />
           <Route path="/catalog/:sectionId/:subId" element={<Catalog />} />
           <Route path="/product/:id" element={<Product />} />
