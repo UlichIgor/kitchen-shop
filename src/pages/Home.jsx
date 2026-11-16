@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import { PRODUCTS, SECTIONS } from "../data/catalog.js";
 import ProductCard from "../components/ProductCard.jsx";
+import { useEffect } from "react";
+import { setPageSeo } from "../utils/seo.js";
 
 export default function Home() {
   const sale = PRODUCTS.filter((p) => p.oldPrice).slice(0, 4);
+
+  useEffect(() => {
+    setPageSeo({ title: "Товари для дому, ремонту, двері та вікна", description: "Kitchen Shop — каталог товарів для дому: матеріали для ремонту, міжкімнатні двері, металопластикові вікна, кухонна техніка та посуд. Переглядайте асортимент і акційні пропозиції." });
+  }, []);
 
   return (
     <>
