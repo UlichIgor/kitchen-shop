@@ -5,6 +5,8 @@ import ProductCard from "../components/ProductCard.jsx";
 import Breadcrumbs from "../components/Breadcrumbs.jsx";
 import { SECTIONS } from "../data/catalog.js";
 import NotFound from "./NotFound.jsx";
+import { useEffect } from "react";
+import { setPageSeo } from "../utils/seo.js";
 
 export default function Catalog({ salesMode = false }) {
   const { sectionId, subId } = useParams();
