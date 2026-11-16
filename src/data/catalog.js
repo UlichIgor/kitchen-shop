@@ -89,7 +89,7 @@ export const PRODUCTS = [
   {
     id: 38, section: "dveri", sub: "mizhkimnatni-dveri",
     name: "Міжкімнатні двері Новий Стиль GRETA, дуб сірий, чорне скло",
-    price: 5490, priceEstimated: true, image: "/img/Novy Styl GRETA interior doors, grey oak, black glass.png", color: "#d8d3cd",
+    price: 4612, oldPrice: 5490, discount: 16, priceEstimated: true, image: "/img/Novy Styl GRETA interior doors, grey oak, black glass.png", color: "#d8d3cd",
     desc: "Міжкімнатне дверне полотно у стриманому сірому відтінку з декоративною чорною скляною вставкою. Конструкція із соснових брусів, покриття ПВХ.",
     specs: [["Колір", "Дуб сірий"], ["Вид", "Міжкімнатні"], ["Покриття", "ПВХ"], ["Тип", "Зі склом"], ["Ширина полотна", "600 мм"], ["Висота полотна", "2000 мм"], ["Матеріал", "МДФ"], ["Товщина полотна", "40 мм"], ["Комплектація", "Дверне полотно"], ["Країна-виробник", "Україна"]],
   },
