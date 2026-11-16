@@ -7,6 +7,7 @@ import ProductImage from "../components/ProductImage.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import Price from "../components/Price.jsx";
 import NotFound from "./NotFound.jsx";
+import { setPageSeo } from "../utils/seo.js";
 
 export default function Product() {
   const { id } = useParams();
