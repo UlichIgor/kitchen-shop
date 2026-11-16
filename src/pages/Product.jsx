@@ -19,6 +19,12 @@ export default function Product() {
     setQty(1);
   }, [id]);
 
+  useEffect(() => {
+    if (!product) return;
+    const description = `${product.name}. ${product.desc} Характеристики та замовлення в Kitchen Shop.`.slice(0, 300);
+    setPageSeo({ title: product.name, description, path: `#/product/${id}`, type: "product" });
+  }, [id, product]);
+
   if (!product) return <NotFound />;
 
   const section = getSection(product.section);
