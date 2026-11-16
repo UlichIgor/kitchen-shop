@@ -51,6 +51,16 @@ export default function Catalog({ salesMode = false }) {
       ? `Результати пошуку: «${params.get("q")}»`
       : sub?.name || section?.name || "Усі товари";
 
+  useEffect(() => {
+    const description = salesMode
+      ? "Акційні товари Kitchen Shop: актуальні знижки на товари для дому, ремонту, двері та вікна."
+      : query
+        ? `Результати пошуку товарів у Kitchen Shop за запитом: ${params.get("q")}.`
+        : `${sub?.name || section?.name || "Каталог товарів"} — асортимент Kitchen Shop. Переглядайте товари, характеристики та ціни.`;
+    const path = salesMode ? "#/sales" : sectionId ? `#/catalog/${sectionId}${subId ? `/${subId}` : ""}` : "#/catalog";
+    setPageSeo({ title, description, path });
+  }, [title, salesMode, query, params, sectionId, subId, section, sub]);
+
   return (
     <div className="container page">
       <Breadcrumbs items={crumbs} />
