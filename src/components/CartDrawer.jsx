@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { money } from "../data/catalog.js";
 import { useCart } from "../context/CartContext.jsx";
 import ProductImage from "./ProductImage.jsx";
@@ -8,6 +9,8 @@ const MANAGER_WHATSAPP = "380980998127";
 
 export default function CartDrawer() {
   const { items, total, count, isOpen, closeCart, changeQty, remove, clear } = useCart();
+  const navigate = useNavigate();
+  const continueShopping = () => { closeCart(); setStep("cart"); navigate("/catalog"); };
   const [step, setStep] = useState("cart"); // cart | form | done
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
@@ -130,7 +133,7 @@ export default function CartDrawer() {
           <>
             <div className="drawer__body">
               {items.length === 0 ? (
-                <p className="drawer__empty">Кошик порожній. Оберіть щось у каталозі 🙂</p>
+                <div className="drawer__empty"><p>Кошик порожній. Оберіть щось у каталозі 🙂</p><button type="button" className="btn btn--ghost" onClick={continueShopping}>← Повернутися до покупок</button></div>
               ) : (
                 items.map(({ id, qty, product }) => (
                   <div className="line" key={id}>
@@ -227,7 +230,7 @@ export default function CartDrawer() {
             <h3>Дякуємо!</h3>
             <p>Демо-номер: <b>{orderId}</b></p>
             <p><b>Увага:</b> це демонстраційний режим. {orderSaved ? "Дані збережені лише в цьому браузері." : "Браузер не дозволив зберегти дані локально."} Магазин не отримав замовлення, і дзвінок не буде здійснено.</p>
-            <button type="button" className="btn" onClick={closeCart}>Продовжити покупки</button>
+            <button type="button" className="btn" onClick={continueShopping}>← Повернутися до покупок</button>
           </div>
         )}
       </aside>
