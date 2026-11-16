@@ -37,8 +37,6 @@ export default function Catalog({ salesMode = false }) {
     return list;
   }, [sectionId, subId, query, sort, onlySale, salesMode, saleSection, saleSub]);
 
-  if ((sectionId && !section) || (subId && !sub)) return <NotFound />;
-
   const crumbs = salesMode
     ? [{ label: "Акції" }]
     : [{ label: "Каталог", to: section || query ? "/catalog" : undefined }];
@@ -60,6 +58,8 @@ export default function Catalog({ salesMode = false }) {
     const path = salesMode ? "#/sales" : sectionId ? `#/catalog/${sectionId}${subId ? `/${subId}` : ""}` : "#/catalog";
     setPageSeo({ title, description, path });
   }, [title, salesMode, query, params, sectionId, subId, section, sub]);
+
+  if ((sectionId && !section) || (subId && !sub)) return <NotFound />;
 
   return (
     <div className="container page">
