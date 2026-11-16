@@ -21,7 +21,7 @@ export default function Catalog({ salesMode = false }) {
   const products = useMemo(() => {
     let list = PRODUCTS.filter(
       (p) =>
-        (!salesMode && (!sectionId || p.section === sectionId)) &&
+        (salesMode || !sectionId || p.section === sectionId) &&
         (!salesMode || !saleSection || p.section === saleSection) &&
         (!salesMode || !saleSub || p.sub === saleSub) &&
         (!salesMode || Boolean(p.oldPrice)) &&
