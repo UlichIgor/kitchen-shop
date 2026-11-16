@@ -6,12 +6,14 @@ import Breadcrumbs from "../components/Breadcrumbs.jsx";
 import { SECTIONS } from "../data/catalog.js";
 import NotFound from "./NotFound.jsx";
 
-export default function Catalog() {
+export default function Catalog({ salesMode = false }) {
   const { sectionId, subId } = useParams();
   const [params] = useSearchParams();
   const query = (params.get("q") || "").trim().toLowerCase();
   const [sort, setSort] = useState("default");
-  const [onlySale, setOnlySale] = useState(false);
+  const [onlySale, setOnlySale] = useState(salesMode);
+  const [saleSection, setSaleSection] = useState("");
+  const [saleSub, setSaleSub] = useState("");
 
   const section = sectionId ? getSection(sectionId) : null;
   const sub = section && subId ? getSub(sectionId, subId) : null;
@@ -19,7 +21,10 @@ export default function Catalog() {
   const products = useMemo(() => {
     let list = PRODUCTS.filter(
       (p) =>
-        (!sectionId || p.section === sectionId) &&
+        (!salesMode && (!sectionId || p.section === sectionId)) &&
+        (!salesMode || !saleSection || p.section === saleSection) &&
+        (!salesMode || !saleSub || p.sub === saleSub) &&
+        (!salesMode || Boolean(p.oldPrice)) &&
         (!subId || p.sub === subId) &&
         (!onlySale || p.oldPrice) &&
         (!query || `${p.name} ${p.desc}`.toLowerCase().includes(query))
@@ -28,17 +33,21 @@ export default function Catalog() {
     if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name, "uk"));
     return list;
-  }, [sectionId, subId, query, sort, onlySale]);
+  }, [sectionId, subId, query, sort, onlySale, salesMode, saleSection, saleSub]);
 
   if ((sectionId && !section) || (subId && !sub)) return <NotFound />;
 
-  const crumbs = [{ label: "Каталог", to: section || query ? "/catalog" : undefined }];
+  const crumbs = salesMode
+    ? [{ label: "Акції" }]
+    : [{ label: "Каталог", to: section || query ? "/catalog" : undefined }];
   if (section) crumbs.push({ label: section.name, to: sub ? `/catalog/${section.id}` : undefined });
   if (sub) crumbs.push({ label: sub.name });
 
-  const title = query
-    ? `Результати пошуку: «${params.get("q")}»`
-    : sub?.name || section?.name || "Усі товари";
+  const title = salesMode
+    ? "Акційні товари"
+    : query
+      ? `Результати пошуку: «${params.get("q")}»`
+      : sub?.name || section?.name || "Усі товари";
 
   return (
     <div className="container page">
@@ -70,14 +79,35 @@ export default function Catalog() {
 
         <section className="catalog__main">
           <h1 className="page__title">{title}</h1>
+          {salesMode && <p className="page__lead">Вигідні пропозиції Kitchen Shop. Оберіть категорію, щоб швидко знайти товари зі знижками.</p>}
           {section && !sub && <p className="page__lead">{section.desc}</p>}
+
+          {salesMode && (
+            <div className="sale-filters" aria-label="Фільтри акційних товарів">
+              <label className="select">
+                Категорія:
+                <select value={saleSection} onChange={(e) => { setSaleSection(e.target.value); setSaleSub(""); }}>
+                  <option value="">Усі категорії</option>
+                  {SECTIONS.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              </label>
+              <label className="select">
+                Підкатегорія:
+                <select value={saleSub} onChange={(e) => setSaleSub(e.target.value)} disabled={!saleSection}>
+                  <option value="">Усі підкатегорії</option>
+                  {SECTIONS.find((s) => s.id === saleSection)?.subsections.map((sb) => <option key={sb.id} value={sb.id}>{sb.name}</option>)}
+                </select>
+              </label>
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => { setSaleSection(""); setSaleSub(""); setSort("default"); }}>Скинути фільтри</button>
+            </div>
+          )}
 
           <div className="toolbar">
             <span className="toolbar__count">Знайдено: {products.length}</span>
-            <label className="check">
+            {!salesMode && <label className="check">
               <input type="checkbox" checked={onlySale} onChange={(e) => setOnlySale(e.target.checked)} />
               Лише зі знижкою
-            </label>
+            </label>}
             <label className="select">
               Сортування:
               <select value={sort} onChange={(e) => setSort(e.target.value)}>
