@@ -68,6 +68,11 @@ export default function Header() {
               Усі товари
             </Link>
           </li>
+          <li className="nav__item">
+            <Link to="/sales" className="nav__link nav__link--sale" onClick={closeMenu}>
+              🔥 Акції
+            </Link>
+          </li>
           {SECTIONS.map((section) => (
             <li key={section.id} className="nav__item">
               <Link to={`/catalog/${section.id}`} className="nav__link" onClick={closeMenu}>
