@@ -13,14 +13,14 @@ function setMeta(attribute, key, content) {
 
 export function setPageSeo({ title, description, path = "", type = "website" }) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : "Товари для дому, ремонту, двері та вікна";
-  const canonical = SITE_URL + path;
+  const canonical = SITE_URL;\n  const pageUrl = SITE_URL + path;
   document.title = fullTitle;
   setMeta("name", "description", description);
   setMeta("property", "og:type", type);
   setMeta("property", "og:site_name", SITE_NAME);
   setMeta("property", "og:title", fullTitle);
   setMeta("property", "og:description", description);
-  setMeta("property", "og:url", canonical);
+  setMeta("property", "og:url", pageUrl);
   setMeta("name", "twitter:card", "summary");
   setMeta("name", "twitter:title", fullTitle);
   setMeta("name", "twitter:description", description);
