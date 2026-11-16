@@ -230,3 +230,21 @@
   th { width: 42%; color: $c-muted; font-weight: 500; background: $c-bg; }
   tr:last-child { th, td { border-bottom: 0; } }
 }
+
+
+// ===== Фільтри розділу акцій =====
+.sale-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid $c-border;
+  border-radius: $radius;
+  background: $c-surface;
+
+  .select { flex-wrap: wrap; }
+  select { max-width: 100%; }
+  select:disabled { opacity: 0.55; cursor: not-allowed; }
+}
