@@ -183,6 +183,9 @@ export default function CartDrawer() {
               >
                 Очистити кошик
               </button>
+              <button type="button" className="btn btn--ghost btn--block" onClick={continueShopping}>
+                ← Повернутися до покупок
+              </button>
             </div>
           </>
         )}
