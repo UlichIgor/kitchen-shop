@@ -133,7 +133,34 @@ export default function Admin() {
     finally { setSaving(""); }
   }
 
-  async function createProduct(event) {\n    event.preventDefault(); setSaving("new-product"); setError(""); setNotice("");\n    try {\n      if (!newProduct.name.trim() || !newProduct.category_id || Number(newProduct.price) < 0 || !Number.isFinite(Number(newProduct.price))) throw new Error("Заповніть назву, категорію та коректну ціну.");\n      const payload = { name: newProduct.name.trim(), slug: newProduct.slug.trim() || slugify(newProduct.name), description: newProduct.description.trim(), price: Number(newProduct.price), old_price: newProduct.old_price === "" ? null : Number(newProduct.old_price), sku: newProduct.sku.trim() || null, image_url: newProduct.image_url.trim() || null, category_id: newProduct.category_id, stock_quantity: Math.max(0, Number.parseInt(newProduct.stock_quantity, 10) || 0), is_active: true, specs: [], metadata: {} };\n      await adminRequest("products", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(payload) });\n      setNewProduct({ name: "", slug: "", description: "", price: "", old_price: "", sku: "", image_url: "", category_id: "", stock_quantity: "0" });\n      setShowProductForm(false); setNotice("Товар додано до каталогу."); await loadDashboard();\n    } catch (e) { setError(formatError(e)); } finally { setSaving(""); }\n  }\n\n  async function createCategory(event) {\n    event.preventDefault(); setSaving("new-category"); setError(""); setNotice("");\n    try {\n      const name = newCategory.name.trim();\n      if (!name) throw new Error("Вкажіть назву категорії.");\n      await adminRequest("categories", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ name, slug: newCategory.slug.trim() || slugify(name), parent_id: newCategory.parent_id || null, sort_order: categories.length + 1, is_active: true }) });\n      setNewCategory({ name: "", slug: "", parent_id: "" }); setNotice("Категорію створено."); await loadDashboard();\n    } catch (e) { setError(formatError(e)); } finally { setSaving(""); }\n  }\n\n  async function updateCategory(categoryId, patch) {\n    setSaving(categoryId); setError("");\n    try { await adminRequest(`categories?id=eq.${categoryId}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) }); await loadDashboard(); }\n    catch (e) { setError(formatError(e)); } finally { setSaving(""); }\n  }\n\n  async function logout() {
+  async function createProduct(event) {
+    event.preventDefault(); setSaving("new-product"); setError(""); setNotice("");
+    try {
+      if (!newProduct.name.trim() || !newProduct.category_id || Number(newProduct.price) < 0 || !Number.isFinite(Number(newProduct.price))) throw new Error("Заповніть назву, категорію та коректну ціну.");
+      const payload = { name: newProduct.name.trim(), slug: newProduct.slug.trim() || slugify(newProduct.name), description: newProduct.description.trim(), price: Number(newProduct.price), old_price: newProduct.old_price === "" ? null : Number(newProduct.old_price), sku: newProduct.sku.trim() || null, image_url: newProduct.image_url.trim() || null, category_id: newProduct.category_id, stock_quantity: Math.max(0, Number.parseInt(newProduct.stock_quantity, 10) || 0), is_active: true, specs: [], metadata: {} };
+      await adminRequest("products", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(payload) });
+      setNewProduct({ name: "", slug: "", description: "", price: "", old_price: "", sku: "", image_url: "", category_id: "", stock_quantity: "0" });
+      setShowProductForm(false); setNotice("Товар додано до каталогу."); await loadDashboard();
+    } catch (e) { setError(formatError(e)); } finally { setSaving(""); }
+  }
+
+  async function createCategory(event) {
+    event.preventDefault(); setSaving("new-category"); setError(""); setNotice("");
+    try {
+      const name = newCategory.name.trim();
+      if (!name) throw new Error("Вкажіть назву категорії.");
+      await adminRequest("categories", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ name, slug: newCategory.slug.trim() || slugify(name), parent_id: newCategory.parent_id || null, sort_order: categories.length + 1, is_active: true }) });
+      setNewCategory({ name: "", slug: "", parent_id: "" }); setNotice("Категорію створено."); await loadDashboard();
+    } catch (e) { setError(formatError(e)); } finally { setSaving(""); }
+  }
+
+  async function updateCategory(categoryId, patch) {
+    setSaving(categoryId); setError("");
+    try { await adminRequest(`categories?id=eq.${categoryId}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) }); await loadDashboard(); }
+    catch (e) { setError(formatError(e)); } finally { setSaving(""); }
+  }
+
+  async function logout() {
     await signOutAdmin(); setAuthorized(false); setUser(null); setOrders([]); setItems([]); setProducts([]);
   }
 
@@ -167,27 +194,63 @@ export default function Admin() {
     </div>
     <div className="admin-tabs" role="tablist" aria-label="Розділи адмінпанелі">
       <button type="button" role="tab" aria-selected={tab === "orders"} className={tab === "orders" ? "is-active" : ""} onClick={() => setTab("orders")}>Замовлення ({orders.length})</button>
-      <button type="button" role="tab" aria-selected={tab === "products"} className={tab === "products" ? "is-active" : ""} onClick={() => setTab("products")}>Товари ({products.length})</button>\n      <button type="button" role="tab" aria-selected={tab === "categories"} className={tab === "categories" ? "is-active" : ""} onClick={() => setTab("categories")}>Категорії ({categories.length})</button>
+      <button type="button" role="tab" aria-selected={tab === "products"} className={tab === "products" ? "is-active" : ""} onClick={() => setTab("products")}>Товари ({products.length})</button>
+      <button type="button" role="tab" aria-selected={tab === "categories"} className={tab === "categories" ? "is-active" : ""} onClick={() => setTab("categories")}>Категорії ({categories.length})</button>
     </div>
+    {notice && <p className="admin-message admin-message--success" role="status">{notice}</p>}
     {tab === "orders" ? <section className="admin-panel">
       <div className="admin-panel__head"><div><h2>Замовлення магазину</h2><p>Дані завантажуються безпосередньо з бази даних.</p></div><button className="btn btn--ghost btn--sm" onClick={loadDashboard} disabled={busy}>{busy ? "Оновлення…" : "↻ Оновити"}</button></div>
       {orders.length === 0 ? <div className="account-empty"><span>📭</span><h3>Замовлень поки немає</h3><p>Нові оформлення з сайту з’являтимуться тут автоматично.</p></div> :
         <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Замовлення</th><th>Покупець</th><th>Склад</th><th>Сума</th><th>Статус</th></tr></thead><tbody>
           {orders.map((order) => <tr key={order.id}><td><strong>№ {order.order_number}</strong><small>{formatDate(order.created_at)}</small><small>{order.id.slice(0, 8)}</small></td><td><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email || "Email не вказано"}</small><small>{order.delivery_address || "Самовивіз / адресу не вказано"}</small></td><td>{(itemsByOrder[order.id] || []).map((item) => <small key={item.id}>{item.product_name} × {item.quantity} — {money(Number(item.line_total))}</small>)}{order.notes && <small>Коментар: {order.notes}</small>}</td><td><strong>{money(Number(order.total))}</strong></td><td><select aria-label={`Статус замовлення ${order.order_number}`} value={order.status} disabled={saving === order.id} onChange={(e) => updateOrder(order.id, e.target.value)}>{ORDER_STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></td></tr>)}
         </tbody></table></div>}
-    </section> : <section className="admin-panel">
-      <div className="admin-panel__head"><div><h2>Каталог товарів</h2><p>Редагування ціни, залишку та видимості товарів.</p></div></div>
+    </section> : tab === "products" ? <section className="admin-panel">
+      <div className="admin-panel__head"><div><h2>Каталог товарів</h2><p>Створення товарів і редагування ціни, залишку та видимості.</p></div><button className="btn btn--sm" onClick={() => setShowProductForm((value) => !value)}>{showProductForm ? "Закрити форму" : "+ Додати товар"}</button></div>
+      {showProductForm && <form className="admin-editor" onSubmit={createProduct}>
+        <label>Назва товару<input required value={newProduct.name} onChange={(e) => setNewProduct((p) => ({ ...p, name: e.target.value, slug: p.slug || slugify(e.target.value) }))} /></label>
+        <label>Slug<input value={newProduct.slug} onChange={(e) => setNewProduct((p) => ({ ...p, slug: e.target.value }))} /></label>
+        <label>Категорія<select required value={newProduct.category_id} onChange={(e) => setNewProduct((p) => ({ ...p, category_id: e.target.value }))}><option value="">Оберіть категорію</option>{categories.filter((cat) => cat.is_active).map((cat) => <option key={cat.id} value={cat.id}>{cat.parent_id ? "— " : ""}{cat.name}</option>)}</select></label>
+        <label>Ціна, грн<input required type="number" min="0" step="0.01" value={newProduct.price} onChange={(e) => setNewProduct((p) => ({ ...p, price: e.target.value }))} /></label>
+        <label>Стара ціна, грн<input type="number" min="0" step="0.01" value={newProduct.old_price} onChange={(e) => setNewProduct((p) => ({ ...p, old_price: e.target.value }))} /></label>
+        <label>Залишок<input type="number" min="0" step="1" value={newProduct.stock_quantity} onChange={(e) => setNewProduct((p) => ({ ...p, stock_quantity: e.target.value }))} /></label>
+        <label>Артикул<input value={newProduct.sku} onChange={(e) => setNewProduct((p) => ({ ...p, sku: e.target.value }))} /></label>
+        <label>URL зображення<input type="url" placeholder="https://…" value={newProduct.image_url} onChange={(e) => setNewProduct((p) => ({ ...p, image_url: e.target.value }))} /></label>
+        <label className="admin-editor__wide">Опис<textarea rows="3" value={newProduct.description} onChange={(e) => setNewProduct((p) => ({ ...p, description: e.target.value }))} /></label>
+        <button className="btn" type="submit" disabled={saving === "new-product"}>{saving === "new-product" ? "Додавання…" : "Зберегти товар"}</button>
+      </form>}
       <div className="admin-filters"><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Пошук товару…" aria-label="Пошук товару" /></div>
       <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Товар</th><th>Ціна, грн</th><th>Залишок</th><th>Видимість</th><th>Зберегти</th></tr></thead><tbody>
         {filteredProducts.map((product) => <ProductRow key={product.id} product={product} saving={saving === product.id} onSave={updateProduct} />)}
         {filteredProducts.length === 0 && <tr><td colSpan="5" className="admin-no-results">Нічого не знайдено.</td></tr>}
       </tbody></table></div>
+    </section> : <section className="admin-panel">
+      <div className="admin-panel__head"><div><h2>Категорії каталогу</h2><p>Створення, перейменування та приховування категорій.</p></div></div>
+      <form className="admin-editor admin-editor--category" onSubmit={createCategory}>
+        <label>Назва категорії<input required value={newCategory.name} onChange={(e) => setNewCategory((p) => ({ ...p, name: e.target.value, slug: p.slug || slugify(e.target.value) }))} /></label>
+        <label>Slug<input value={newCategory.slug} onChange={(e) => setNewCategory((p) => ({ ...p, slug: e.target.value }))} /></label>
+        <label>Батьківська категорія<select value={newCategory.parent_id} onChange={(e) => setNewCategory((p) => ({ ...p, parent_id: e.target.value }))}><option value="">Головна категорія</option>{categories.filter((cat) => !cat.parent_id).map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}</select></label>
+        <button className="btn" type="submit" disabled={saving === "new-category"}>{saving === "new-category" ? "Створення…" : "+ Додати категорію"}</button>
+      </form>
+      <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Категорія</th><th>Slug</th><th>Тип</th><th>Видимість</th><th>Дія</th></tr></thead><tbody>{categories.map((cat) => <CategoryRow key={cat.id} category={cat} saving={saving === cat.id} onSave={updateCategory} />)}</tbody></table></div>
     </section>}
     <p className="admin-back"><Link to="/">← На головну</Link></p>
   </div>;
 }
 
-function slugify(value) {\n  const map = { а:"a", б:"b", в:"v", г:"h", ґ:"g", д:"d", е:"e", є:"ye", ж:"zh", з:"z", и:"y", і:"i", ї:"yi", й:"y", к:"k", л:"l", м:"m", н:"n", о:"o", п:"p", р:"r", с:"s", т:"t", у:"u", ф:"f", х:"kh", ц:"ts", ч:"ch", ш:"sh", щ:"shch", ю:"yu", я:"ya", ь:"", ъ:"", ё:"yo", э:"e" };\n  return String(value).toLowerCase().split("").map((ch) => map[ch] ?? ch).join("").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");\n}\n\nfunction CategoryRow({ category, saving, onSave }) {\n  const [name, setName] = useState(category.name);\n  const [slug, setSlug] = useState(category.slug);\n  const [active, setActive] = useState(category.is_active);\n  useEffect(() => { setName(category.name); setSlug(category.slug); setActive(category.is_active); }, [category]);\n  return <tr><td><input className="admin-cell-input" value={name} onChange={(e) => setName(e.target.value)} aria-label="Назва категорії" /></td><td><input className="admin-cell-input" value={slug} onChange={(e) => setSlug(e.target.value)} aria-label="Slug категорії" /></td><td>{category.parent_id ? "Підкатегорія" : "Основна"}</td><td><label className="admin-toggle"><input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />{active ? "Активна" : "Прихована"}</label></td><td><button className="btn btn--sm" disabled={saving || !name.trim() || !slug.trim()} onClick={() => onSave(category.id, { name: name.trim(), slug: slug.trim(), is_active: active })}>{saving ? "…" : "Зберегти"}</button></td></tr>;\n}\n\nfunction ProductRow({ product, saving, onSave }) {
+function slugify(value) {
+  const map = { а:"a", б:"b", в:"v", г:"h", ґ:"g", д:"d", е:"e", є:"ye", ж:"zh", з:"z", и:"y", і:"i", ї:"yi", й:"y", к:"k", л:"l", м:"m", н:"n", о:"o", п:"p", р:"r", с:"s", т:"t", у:"u", ф:"f", х:"kh", ц:"ts", ч:"ch", ш:"sh", щ:"shch", ю:"yu", я:"ya", ь:"", ъ:"", ё:"yo", э:"e" };
+  return String(value).toLowerCase().split("").map((ch) => map[ch] ?? ch).join("").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function CategoryRow({ category, saving, onSave }) {
+  const [name, setName] = useState(category.name);
+  const [slug, setSlug] = useState(category.slug);
+  const [active, setActive] = useState(category.is_active);
+  useEffect(() => { setName(category.name); setSlug(category.slug); setActive(category.is_active); }, [category]);
+  return <tr><td><input className="admin-cell-input" value={name} onChange={(e) => setName(e.target.value)} aria-label="Назва категорії" /></td><td><input className="admin-cell-input" value={slug} onChange={(e) => setSlug(e.target.value)} aria-label="Slug категорії" /></td><td>{category.parent_id ? "Підкатегорія" : "Основна"}</td><td><label className="admin-toggle"><input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />{active ? "Активна" : "Прихована"}</label></td><td><button className="btn btn--sm" disabled={saving || !name.trim() || !slug.trim()} onClick={() => onSave(category.id, { name: name.trim(), slug: slug.trim(), is_active: active })}>{saving ? "…" : "Зберегти"}</button></td></tr>;
+}
+
+function ProductRow({ product, saving, onSave }) {
   const [price, setPrice] = useState(String(product.price ?? ""));
   const [stock, setStock] = useState(String(product.stock_quantity ?? 0));
   const [active, setActive] = useState(Boolean(product.is_active));
