@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { PRODUCTS, getSection, getSub } from "../data/catalog.js";
+import { getSection, getSub } from "../data/catalog.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import Breadcrumbs from "../components/Breadcrumbs.jsx";
-import { SECTIONS } from "../data/catalog.js";
+
 import NotFound from "./NotFound.jsx";
 import { useEffect } from "react";
 import { setPageSeo } from "../utils/seo.js";
 
 export default function Catalog({ salesMode = false }) {
+  const { products: PRODUCTS, sections: SECTIONS, loading, error } = useCatalog();
   const { sectionId, subId } = useParams();
   const [params] = useSearchParams();
   const query = (params.get("q") || "").trim().toLowerCase();
@@ -91,6 +93,8 @@ export default function Catalog({ salesMode = false }) {
 
         <section className="catalog__main">
           <h1 className="page__title">{title}</h1>
+          {loading && <p className="page__lead">Завантажуємо актуальний каталог…</p>}
+          {error && <p className="account-notice" role="status">{error}</p>}
           {salesMode && <p className="page__lead">Вигідні пропозиції Kitchen Shop. Оберіть категорію, щоб швидко знайти товари зі знижками.</p>}
           {section && !sub && <p className="page__lead">{section.desc}</p>}
 
