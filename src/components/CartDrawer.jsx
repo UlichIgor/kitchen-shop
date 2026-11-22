@@ -46,7 +46,7 @@ export default function CartDrawer() {
 
   const validate = () => {
     const er = {};
-    if (!form.name.trim()) er.name = "Вкажіть ім’я";
+    if (form.name.trim().length < 2) er.name = "Вкажіть ім’я та прізвище";
     if (form.phone.replace(/\D/g, "").length < 10) er.phone = "Вкажіть коректний номер телефону";
     if (!form.address.trim()) er.address = "Вкажіть адресу або відділення пошти";
     setErrors(er);
@@ -59,7 +59,7 @@ export default function CartDrawer() {
     setSubmitting(true);
     setErrors({});
     try {
-      const response = await fetch(\`\${SUPABASE_URL}/functions/v1/create-order\`, {
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json", apikey: SUPABASE_PUBLISHABLE_KEY },
         body: JSON.stringify({
@@ -75,20 +75,20 @@ export default function CartDrawer() {
 
       const orderNumber = String(result.orderNumber);
       const serverTotal = Number(result.total);
-      const orderLines = items.map((item, index) => \`\${index + 1}. \${item.product.name} — \${item.qty} шт.\`).join("\n");
+      const orderLines = items.map((item, index) => `${index + 1}. ${item.product.name} — ${item.qty} шт.`).join("\n");
       const message = [
-        \`ПІДТВЕРДЖЕНЕ ЗАМОВЛЕННЯ №\${orderNumber}\`,
+        `ПІДТВЕРДЖЕНЕ ЗАМОВЛЕННЯ №${orderNumber}`,
         "",
         "ТОВАРИ:",
         orderLines,
-        \`Сума за даними магазину: \${Number.isFinite(serverTotal) ? money(serverTotal) : "уточнюється"}\`,
+        `Сума за даними магазину: ${Number.isFinite(serverTotal) ? money(serverTotal) : "уточнюється"}`,
         "",
-        \`Клієнт: \${form.name}\`,
-        \`Телефон: \${form.phone}\`,
-        \`Адреса / доставка: \${form.address}\`,
-        form.comment ? \`Коментар: \${form.comment}\` : "",
+        `Клієнт: ${form.name}`,
+        `Телефон: ${form.phone}`,
+        `Адреса / доставка: ${form.address}`,
+        form.comment ? `Коментар: ${form.comment}` : "",
       ].filter(Boolean).join("\n");
-      setWhatsappUrl(\`https://wa.me/\${MANAGER_WHATSAPP}?text=\${encodeURIComponent(message)}\`);
+      setWhatsappUrl(`https://wa.me/${MANAGER_WHATSAPP}?text=${encodeURIComponent(message)}`);
       setOrderId(orderNumber);
       clear();
       setForm(EMPTY_FORM);
