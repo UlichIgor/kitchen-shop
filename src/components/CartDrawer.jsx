@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { money } from "../data/catalog.js";
 import { useCart } from "../context/CartContext.jsx";
 import ProductImage from "./ProductImage.jsx";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../lib/supabase.js";
 
 const EMPTY_FORM = { name: "", phone: "", address: "", comment: "" };
 const MANAGER_WHATSAPP = "380980998127";
@@ -15,8 +16,9 @@ export default function CartDrawer() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
   const [orderId, setOrderId] = useState("");
-  const [orderSaved, setOrderSaved] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [requestId, setRequestId] = useState(() => crypto.randomUUID());
 
   // Esc закриває кошик; тло не прокручується, поки кошик відкритий
   useEffect(() => {
@@ -51,63 +53,52 @@ export default function CartDrawer() {
     return Object.keys(er).length === 0;
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-
-    const order = {
-      id: "№" + Date.now().toString().slice(-6),
-      date: new Date().toISOString(),
-      customer: form,
-      items: items.map((i) => ({
-        id: i.id,
-        name: i.product.name,
-        price: i.product.price,
-        qty: i.qty,
-      })),
-      total,
-    };
-
-    /* Для реального магазину підключіть відправку замовлення на сервер, наприклад:
-       fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(order) });
-       Зараз замовлення лише зберігається в браузері (демо-режим). */
-    let saved = false;
-    try {
-      const all = JSON.parse(localStorage.getItem("kitchen-shop-orders") || "[]");
-      const orders = Array.isArray(all) ? all : [];
-      orders.push(order);
-      localStorage.setItem("kitchen-shop-orders", JSON.stringify(orders));
-      saved = true;
-    } catch {
-      /* Замовлення все одно не надсилається магазину. */
-    }
-
-    const orderDate = new Date(order.date).toLocaleString("uk-UA");
-    const orderLines = order.items.map((item, index) => `${index + 1}. ${item.name} — ${item.qty} шт. × ${money(item.price)} = ${money(item.price * item.qty)}`).join("\n");
-    const message = [
-      `НОВЕ ЗАМОВЛЕННЯ ${order.id}`,
-      `Дата: ${orderDate}`,
-      "",
-      "ТОВАРИ:",
-      orderLines,
-      `Разом: ${money(order.total)}`,
-      "",
-      `Клієнт: ${form.name}`,
-      `Телефон клієнта: ${form.phone}`,
-      `Адреса / доставка: ${form.address}`,
-      form.comment ? `Коментар: ${form.comment}` : "",
-    ].filter(Boolean).join("\n");
-    const waUrl = `https://wa.me/${MANAGER_WHATSAPP}?text=${encodeURIComponent(message)}`;
-
-    setOrderSaved(saved);
-    setOrderId(order.id);
-    setWhatsappUrl(waUrl);
-    // Відкриваємо WhatsApp у новій вкладці; менеджер отримає повідомлення після натискання «Надіслати» клієнтом.
-    window.open(waUrl, "_blank", "noopener,noreferrer");
+    if (submitting || !validate()) return;
+    setSubmitting(true);
     setErrors({});
-    clear();
-    setForm(EMPTY_FORM);
-    setStep("done");
+    try {
+      const response = await fetch(\`\${SUPABASE_URL}/functions/v1/create-order\`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify({
+          requestId,
+          customer: { name: form.name, phone: form.phone, address: form.address, comment: form.comment },
+          items: items.map((item) => ({ id: item.id, qty: item.qty })),
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.success || !result.orderNumber) {
+        throw new Error(result.error || "Не вдалося оформити замовлення. Спробуйте ще раз.");
+      }
+
+      const orderNumber = String(result.orderNumber);
+      const serverTotal = Number(result.total);
+      const orderLines = items.map((item, index) => \`\${index + 1}. \${item.product.name} — \${item.qty} шт.\`).join("\n");
+      const message = [
+        \`ПІДТВЕРДЖЕНЕ ЗАМОВЛЕННЯ №\${orderNumber}\`,
+        "",
+        "ТОВАРИ:",
+        orderLines,
+        \`Сума за даними магазину: \${Number.isFinite(serverTotal) ? money(serverTotal) : "уточнюється"}\`,
+        "",
+        \`Клієнт: \${form.name}\`,
+        \`Телефон: \${form.phone}\`,
+        \`Адреса / доставка: \${form.address}\`,
+        form.comment ? \`Коментар: \${form.comment}\` : "",
+      ].filter(Boolean).join("\n");
+      setWhatsappUrl(\`https://wa.me/\${MANAGER_WHATSAPP}?text=\${encodeURIComponent(message)}\`);
+      setOrderId(orderNumber);
+      clear();
+      setForm(EMPTY_FORM);
+      setRequestId(crypto.randomUUID());
+      setStep("done");
+    } catch (error) {
+      setErrors({ general: error?.message || "Сталася помилка. Спробуйте ще раз." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -212,15 +203,16 @@ export default function CartDrawer() {
                 <span>Коментар</span>
                 <textarea name="comment" rows="3" value={form.comment} onChange={onChange} />
               </label>
+              {errors.general && <p className="field-error" role="alert">{errors.general}</p>}
             </div>
 
             <div className="drawer__foot">
               <div className="drawer__total">
-                <span>До сплати</span>
+                <span>Попередня сума</span>
                 <b>{money(total)}</b>
               </div>
-              <button type="submit" className="btn btn--block">Підтвердити замовлення</button>
-              <button type="button" className="btn btn--ghost btn--block" onClick={() => setStep("cart")}>
+              <button type="submit" className="btn btn--block" disabled={submitting || items.length === 0}>{submitting ? "Зберігаємо замовлення…" : "Підтвердити замовлення"}</button>
+              <button type="button" className="btn btn--ghost btn--block" disabled={submitting} onClick={() => setStep("cart")}>
                 ← Назад до кошика
               </button>
             </div>
@@ -231,8 +223,9 @@ export default function CartDrawer() {
           <div className="drawer__body drawer__done">
             <div className="drawer__done-icon">🎉</div>
             <h3>Дякуємо!</h3>
-            <p>Демо-номер: <b>{orderId}</b></p>
-            <p><b>Увага:</b> це демонстраційний режим. {orderSaved ? "Дані збережені лише в цьому браузері." : "Браузер не дозволив зберегти дані локально."} Магазин не отримав замовлення, і дзвінок не буде здійснено.</p>
+            <p>Номер замовлення: <b>№{orderId}</b></p>
+            <p>Замовлення успішно збережено в базі магазину. Менеджер зможе переглянути його в адміністративній панелі та зв’язатися з вами.</p>
+            {whatsappUrl && <a className="btn" href={whatsappUrl} target="_blank" rel="noreferrer">Повідомити менеджера у WhatsApp</a>}
             <button type="button" className="btn" onClick={continueShopping}>← Повернутися до покупок</button>
           </div>
         )}
