@@ -31,13 +31,13 @@ export default function Header() {
     </div>
     <nav className={`nav ${menuOpen ? "nav--open" : ""}`} aria-label="Головна навігація">
       <ul className="container nav__list">
+        <li className="nav__item"><Link to="/about" className="nav__link" onClick={closeMenu}>Про нас</Link></li>
         <li className="nav__item"><Link to="/catalog" className="nav__link" onClick={closeMenu}>Усі товари</Link></li>
         <li className="nav__item"><Link to="/sales" className="nav__link nav__link--sale" onClick={closeMenu}>🔥 Акції</Link></li>
         {SECTIONS.map((section) => <li key={section.id} className="nav__item">
           <Link to={`/catalog/${section.id}`} className="nav__link" onClick={closeMenu}><span aria-hidden="true">{section.emoji}</span> {section.name}</Link>
           <ul className="nav__sub">{section.subsections.map((sub) => <li key={sub.id}><Link to={`/catalog/${section.id}/${sub.id}`} onClick={closeMenu}>{sub.name}</Link></li>)}</ul>
         </li>)}
-        <li className="nav__item"><Link to="/about" className="nav__link" onClick={closeMenu}>Про нас</Link></li>
         <li className="nav__item account-nav-item"><Link to="/account" className="nav__link" onClick={closeMenu}>👤 Мій кабінет</Link></li>
       </ul>
     </nav>
