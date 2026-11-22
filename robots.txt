@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ulichigor.github.io/kitchen-shop/sitemap.xml
