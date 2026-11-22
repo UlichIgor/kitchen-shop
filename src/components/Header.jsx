@@ -61,7 +61,7 @@ export default function Header() {
         </button>
       </div>
 
-      <nav className={`nav ${menuOpen ? "nav--open" : ""}`} aria-label="Розділи каталогу">
+      <nav className={`nav ${menuOpen ? "nav--open" : ""}`} aria-label="Головна навігація">
         <ul className="container nav__list">
           <li className="nav__item">
             <Link to="/catalog" className="nav__link" onClick={closeMenu}>
@@ -89,6 +89,9 @@ export default function Header() {
               </ul>
             </li>
           ))}
+          <li className="nav__item">
+            <Link to="/about" className="nav__link" onClick={closeMenu}>Про нас</Link>
+          </li>
         </ul>
       </nav>
     </header>
