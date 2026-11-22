@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import { PRODUCTS, SECTIONS } from "../data/catalog.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import { useEffect } from "react";
 import { setPageSeo } from "../utils/seo.js";
 
 export default function Home() {
+  const { products: PRODUCTS, sections: SECTIONS, loading, error } = useCatalog();
   const sale = PRODUCTS.filter((p) => p.oldPrice).slice(0, 4);
 
   useEffect(() => {
@@ -26,6 +27,8 @@ export default function Home() {
 
       <section className="container section">
         <h2 className="section__title">Розділи магазину</h2>
+        {loading && <p className="page__lead">Оновлюємо каталог із бази даних…</p>}
+        {error && <p className="account-notice" role="status">{error}</p>}
         <div className="sections">
           {SECTIONS.map((s) => (
             <article className="sec-card" key={s.id}>
