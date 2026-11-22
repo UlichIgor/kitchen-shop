@@ -1,0 +1,155 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+.about-page { overflow: hidden; }
+
+.about-hero {
+  position: relative;
+  color: #fff;
+  background:
+    linear-gradient(110deg, rgba(20, 32, 29, 0.92), rgba(20, 32, 29, 0.62)),
+    url("/img/hero-bg.jpg") center / cover;
+}
+
+.about-hero__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  padding-block: 58px;
+
+  h1 {
+    max-width: 17ch;
+    font-size: clamp(2rem, 1.25rem + 3.2vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+
+  p { max-width: 58ch; color: rgba(#fff, 0.88); font-size: clamp(1rem, 0.95rem + 0.35vw, 1.2rem); }
+  @include up($bp-lg) { padding-block: 96px; }
+}
+
+.about-eyebrow, .about-kicker {
+  display: inline-block;
+  color: $c-primary;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.about-eyebrow { color: #f6c89d; }
+
+.about-intro {
+  display: grid;
+  align-items: center;
+  gap: 28px;
+  padding-block: 48px;
+
+  @include up($bp-md) { grid-template-columns: 1.05fr 0.95fr; gap: 56px; padding-block: 72px; }
+}
+
+.about-intro__copy {
+  h2 { margin: 10px 0 16px; font-size: clamp(1.65rem, 1.2rem + 1.8vw, 2.5rem); line-height: 1.16; }
+  p { max-width: 62ch; margin-top: 12px; color: $c-muted; }
+}
+
+.about-intro__visual {
+  display: grid;
+  min-height: 260px;
+  place-items: end start;
+  padding: 22px;
+  border-radius: $radius;
+  background:
+    linear-gradient(0deg, rgba(16, 28, 25, 0.78), rgba(16, 28, 25, 0.02)),
+    url("/img/hero-bg.jpg") center / cover;
+  box-shadow: $shadow;
+  @include up($bp-md) { min-height: 360px; }
+}
+
+.about-visual-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 260px;
+  padding: 16px 18px;
+  border: 1px solid rgba(#fff, 0.28);
+  border-radius: $radius-sm;
+  background: rgba(255, 255, 255, 0.94);
+  color: $c-text;
+  backdrop-filter: blur(8px);
+
+  span { color: $c-primary; font-size: 1.7rem; line-height: 1; }
+  strong { font-size: 1.05rem; }
+  small { color: $c-muted; }
+}
+
+.about-values { padding-block: 48px; background: $c-primary-soft; }
+
+.about-section-heading {
+  max-width: 680px;
+  margin: 0 auto 28px;
+  text-align: center;
+
+  h2 { margin: 8px 0; font-size: clamp(1.55rem, 1.2rem + 1.5vw, 2.25rem); line-height: 1.18; }
+  p { color: $c-muted; }
+}
+
+.about-value-grid {
+  display: grid;
+  gap: 16px;
+  @include up($bp-md) { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+}
+
+.about-value {
+  padding: 24px;
+  border: 1px solid $c-border;
+  border-radius: $radius;
+  background: $c-surface;
+  box-shadow: 0 8px 24px rgba(20, 32, 29, 0.04);
+
+  h3 { margin: 12px 0 6px; font-size: 1.12rem; }
+  p { color: $c-muted; font-size: 0.94rem; }
+}
+
+.about-value__icon { font-size: 2rem; }
+
+.about-categories { padding-block: 52px 64px; }
+
+.about-category-grid {
+  display: grid;
+  gap: 14px;
+  @include up($bp-sm) { grid-template-columns: repeat(2, 1fr); }
+  @include up($bp-lg) { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+}
+
+.about-category {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 176px;
+  padding: 20px;
+  border: 1px solid $c-border;
+  border-radius: $radius;
+  background: $c-surface;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+
+  &:hover { transform: translateY(-3px); border-color: $c-primary; box-shadow: $shadow; }
+  > span { font-size: 2rem; }
+  strong { margin-top: 8px; font-size: 1.1rem; }
+  small { margin-top: 4px; color: $c-muted; }
+  b { margin-top: auto; padding-top: 12px; color: $c-primary; font-size: 0.88rem; }
+}
+
+.about-cta { padding-block: 36px; background: $c-dark; color: #fff; }
+
+.about-cta__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+  @include up($bp-md) { flex-direction: row; align-items: center; justify-content: space-between; }
+
+  h2 { max-width: 24ch; margin: 8px 0; font-size: clamp(1.45rem, 1.1rem + 1.5vw, 2.1rem); line-height: 1.18; }
+  p { color: rgba(#fff, 0.72); }
+  .about-kicker { color: #f6c89d; }
+}
