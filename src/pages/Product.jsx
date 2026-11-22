@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { PRODUCTS, getProduct, getSection, getSub } from "../data/catalog.js";
+import { getSection, getSub } from "../data/catalog.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import Breadcrumbs from "../components/Breadcrumbs.jsx";
 import ProductImage from "../components/ProductImage.jsx";
@@ -11,7 +12,8 @@ import { setPageSeo } from "../utils/seo.js";
 
 export default function Product() {
   const { id } = useParams();
-  const product = getProduct(id);
+  const { products: PRODUCTS, loading } = useCatalog();
+  const product = PRODUCTS.find((item) => String(item.id) === String(id));
   const { add, openCart } = useCart();
   const [qty, setQty] = useState(1);
 
@@ -25,6 +27,7 @@ export default function Product() {
     setPageSeo({ title: product.name, description, path: `#/product/${id}`, type: "product" });
   }, [id, product]);
 
+  if (!product && loading) return <div className="container page"><p>Завантажуємо товар…</p></div>;
   if (!product) return <NotFound />;
 
   const section = getSection(product.section);
