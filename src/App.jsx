@@ -5,6 +5,7 @@ import Footer from "./components/Footer.jsx";
 import CartDrawer from "./components/CartDrawer.jsx";
 import Toast from "./components/Toast.jsx";
 import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
 import Catalog from "./pages/Catalog.jsx";
 import Product from "./pages/Product.jsx";
 import NotFound from "./pages/NotFound.jsx";
@@ -25,6 +26,7 @@ export default function App() {
       <main className="app__main">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/sales" element={<Catalog salesMode />} />
           <Route path="/catalog/:sectionId" element={<Catalog />} />
