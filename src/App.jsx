@@ -6,38 +6,31 @@ import CartDrawer from "./components/CartDrawer.jsx";
 import Toast from "./components/Toast.jsx";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
+import Account from "./pages/Account.jsx";
+import Admin from "./pages/Admin.jsx";
 import Catalog from "./pages/Catalog.jsx";
 import Product from "./pages/Product.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 }
-
 export default function App() {
-  return (
-    <div className="app">
-      <ScrollToTop />
-      <Header />
-      <main className="app__main">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/catalog" element={<Catalog />} />
-          <Route path="/sales" element={<Catalog salesMode />} />
-          <Route path="/catalog/:sectionId" element={<Catalog />} />
-          <Route path="/catalog/:sectionId/:subId" element={<Catalog />} />
-          <Route path="/product/:id" element={<Product />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Footer />
-      <CartDrawer />
-      <Toast />
-    </div>
-  );
+  return <div className="app">
+    <ScrollToTop /><Header />
+    <main className="app__main"><Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/account" element={<Account />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/catalog" element={<Catalog />} />
+      <Route path="/sales" element={<Catalog salesMode />} />
+      <Route path="/catalog/:sectionId" element={<Catalog />} />
+      <Route path="/catalog/:sectionId/:subId" element={<Catalog />} />
+      <Route path="/product/:id" element={<Product />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes></main>
+    <Footer /><CartDrawer /><Toast />
+  </div>;
 }
