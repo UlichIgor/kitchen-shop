@@ -1,106 +1,78 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { PRODUCTS } from "../data/catalog.js";
+import { useCatalog } from "./CatalogContext.jsx";
 
 const STORAGE_KEY = "kitchen-shop-cart";
 const CartContext = createContext(null);
 
-function loadLines() {
+function loadLines(products) {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!Array.isArray(data)) return [];
-    // Відкидаємо невідомі товари та пошкоджені/некоректні кількості.
-    return data
-      .filter(
-        (line) =>
-          line &&
-          Number.isInteger(line.qty) &&
-          line.qty > 0 &&
-          PRODUCTS.some((product) => product.id === line.id)
-      )
+    return data.filter((line) => line && Number.isInteger(line.qty) && line.qty > 0 &&
+      products.some((product) => String(product.id) === String(line.id)))
       .map((line) => ({ id: line.id, qty: Math.min(line.qty, 99) }));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 export function CartProvider({ children }) {
-  const [lines, setLines] = useState(loadLines);
+  const { products } = useCatalog();
+  const [lines, setLines] = useState(() => loadLines(products));
   const [isOpen, setIsOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
-    } catch {
-      /* localStorage може бути недоступний — це не критично */
-    }
+    setLines((previous) => previous.filter((line) => products.some((product) => String(product.id) === String(line.id))));
+  }, [products]);
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(lines)); } catch { /* localStorage недоступний */ }
   }, [lines]);
 
   useEffect(() => {
     if (!toast) return undefined;
-    const t = setTimeout(() => setToast(""), 2000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setToast(""), 2000);
+    return () => clearTimeout(timer);
   }, [toast]);
 
   const add = useCallback((id, qty = 1) => {
-    const product = PRODUCTS.find((item) => item.id === id);
+    const product = products.find((item) => String(item.id) === String(id));
     const amount = Number.isFinite(Number(qty)) ? Math.floor(Number(qty)) : 0;
     if (!product || amount < 1) return;
-
-    setLines((prev) => {
-      const found = prev.find((line) => line.id === id);
+    setLines((previous) => {
+      const found = previous.find((line) => String(line.id) === String(id));
       return found
-        ? prev.map((line) =>
-            line.id === id ? { ...line, qty: Math.min(99, line.qty + amount) } : line
-          )
-        : [...prev, { id, qty: Math.min(99, amount) }];
+        ? previous.map((line) => String(line.id) === String(id) ? { ...line, qty: Math.min(99, line.qty + amount) } : line)
+        : [...previous, { id: product.id, qty: Math.min(99, amount) }];
     });
     setToast(`«${product.name}» додано в кошик`);
-  }, []);
+  }, [products]);
 
   const changeQty = useCallback((id, delta) => {
     const step = Number(delta);
     if (!Number.isFinite(step) || step === 0) return;
-
-    setLines((prev) =>
-      prev
-        .map((line) =>
-          line.id === id
-            ? { ...line, qty: Math.min(99, Math.max(0, line.qty + step)) }
-            : line
-        )
-        .filter((line) => line.qty > 0)
-    );
+    setLines((previous) => previous.map((line) => String(line.id) === String(id)
+      ? { ...line, qty: Math.min(99, Math.max(0, line.qty + step)) } : line).filter((line) => line.qty > 0));
   }, []);
 
-  const remove = useCallback((id) => {
-    setLines((prev) => prev.filter((l) => l.id !== id));
-  }, []);
-
+  const remove = useCallback((id) => setLines((previous) => previous.filter((line) => String(line.id) !== String(id))), []);
   const clear = useCallback(() => setLines([]), []);
 
   const value = useMemo(() => {
-    const items = lines.map((l) => ({ ...l, product: PRODUCTS.find((p) => p.id === l.id) }));
+    const items = lines.map((line) => ({ ...line, product: products.find((product) => String(product.id) === String(line.id)) })).filter((line) => line.product);
     return {
       items,
-      count: items.reduce((s, i) => s + i.qty, 0),
-      total: items.reduce((s, i) => s + i.product.price * i.qty, 0),
-      add,
-      changeQty,
-      remove,
-      clear,
-      isOpen,
-      openCart: () => setIsOpen(true),
-      closeCart: () => setIsOpen(false),
-      toast,
+      count: items.reduce((sum, item) => sum + item.qty, 0),
+      total: items.reduce((sum, item) => sum + item.product.price * item.qty, 0),
+      add, changeQty, remove, clear, isOpen,
+      openCart: () => setIsOpen(true), closeCart: () => setIsOpen(false), toast,
     };
-  }, [lines, isOpen, toast, add, changeQty, remove, clear]);
+  }, [lines, products, isOpen, toast, add, changeQty, remove, clear]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart має використовуватись всередині CartProvider");
-  return ctx;
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart має використовуватись всередині CartProvider");
+  return context;
 }
