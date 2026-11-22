@@ -69,3 +69,12 @@
 .admin-toggle { display:flex; align-items:center; gap:7px; white-space:nowrap; font-size:.84rem; }
 .admin-toggle input { accent-color:$c-primary; }
 .admin-panel .admin-table td:first-child { min-width:180px; }
+
+.admin-editor { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:0 0 20px; padding:18px; border:1px solid $c-border; border-radius:$radius-sm; background:$c-bg; }
+.admin-editor label { display:grid; gap:6px; color:$c-text; font-size:.84rem; font-weight:650; }
+.admin-editor input, .admin-editor select, .admin-editor textarea { width:100%; min-width:0; min-height:40px; padding:8px 10px; border:1px solid $c-border; border-radius:$radius-sm; background:$c-surface; color:$c-text; font:inherit; font-weight:400; }
+.admin-editor textarea { resize:vertical; }
+.admin-editor__wide { grid-column:1 / -1; }
+.admin-editor--category { grid-template-columns:repeat(4,minmax(0,1fr)); align-items:end; }
+.admin-editor > .btn { justify-self:start; align-self:end; }
+@media (max-width:760px) { .admin-editor, .admin-editor--category { grid-template-columns:1fr; } .admin-editor__wide { grid-column:auto; } }
