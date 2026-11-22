@@ -26,6 +26,10 @@ export default function Admin() {
   const [orders, setOrders] = useState([]);
   const [items, setItems] = useState([]);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [newProduct, setNewProduct] = useState({ name: "", slug: "", description: "", price: "", old_price: "", sku: "", image_url: "", category_id: "", stock_quantity: "0" });
+  const [newCategory, setNewCategory] = useState({ name: "", slug: "", parent_id: "" });
   const [query, setQuery] = useState("");
   const [saving, setSaving] = useState("");
 
@@ -60,12 +64,14 @@ export default function Admin() {
   const loadDashboard = useCallback(async () => {
     setBusy(true); setError("");
     try {
-      const [orderRows, productRows] = await Promise.all([
+      const [orderRows, productRows, categoryRows] = await Promise.all([
         adminRequest("orders?select=*&order=created_at.desc&limit=100"),
-        adminRequest("products?select=id,legacy_id,name,price,old_price,stock_quantity,is_active,sku&order=name.asc&limit=500"),
+        adminRequest("products?select=id,legacy_id,name,price,old_price,stock_quantity,is_active,sku,description,image_url,category_id&order=name.asc&limit=500"),
+        adminRequest("categories?select=id,name,slug,parent_id,sort_order,is_active&order=sort_order.asc,name.asc"),
       ]);
       setOrders(orderRows);
       setProducts(productRows);
+      setCategories(categoryRows);
       if (orderRows.length) {
         const ids = orderRows.map((o) => o.id).join(",");
         const orderItems = await adminRequest(`order_items?select=*&order_id=in.(${ids})&order=created_at.asc`);
@@ -127,7 +133,7 @@ export default function Admin() {
     finally { setSaving(""); }
   }
 
-  async function logout() {
+  async function createProduct(event) {\n    event.preventDefault(); setSaving("new-product"); setError(""); setNotice("");\n    try {\n      if (!newProduct.name.trim() || !newProduct.category_id || Number(newProduct.price) < 0 || !Number.isFinite(Number(newProduct.price))) throw new Error("Заповніть назву, категорію та коректну ціну.");\n      const payload = { name: newProduct.name.trim(), slug: newProduct.slug.trim() || slugify(newProduct.name), description: newProduct.description.trim(), price: Number(newProduct.price), old_price: newProduct.old_price === "" ? null : Number(newProduct.old_price), sku: newProduct.sku.trim() || null, image_url: newProduct.image_url.trim() || null, category_id: newProduct.category_id, stock_quantity: Math.max(0, Number.parseInt(newProduct.stock_quantity, 10) || 0), is_active: true, specs: [], metadata: {} };\n      await adminRequest("products", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(payload) });\n      setNewProduct({ name: "", slug: "", description: "", price: "", old_price: "", sku: "", image_url: "", category_id: "", stock_quantity: "0" });\n      setShowProductForm(false); setNotice("Товар додано до каталогу."); await loadDashboard();\n    } catch (e) { setError(formatError(e)); } finally { setSaving(""); }\n  }\n\n  async function createCategory(event) {\n    event.preventDefault(); setSaving("new-category"); setError(""); setNotice("");\n    try {\n      const name = newCategory.name.trim();\n      if (!name) throw new Error("Вкажіть назву категорії.");\n      await adminRequest("categories", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ name, slug: newCategory.slug.trim() || slugify(name), parent_id: newCategory.parent_id || null, sort_order: categories.length + 1, is_active: true }) });\n      setNewCategory({ name: "", slug: "", parent_id: "" }); setNotice("Категорію створено."); await loadDashboard();\n    } catch (e) { setError(formatError(e)); } finally { setSaving(""); }\n  }\n\n  async function updateCategory(categoryId, patch) {\n    setSaving(categoryId); setError("");\n    try { await adminRequest(`categories?id=eq.${categoryId}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify(patch) }); await loadDashboard(); }\n    catch (e) { setError(formatError(e)); } finally { setSaving(""); }\n  }\n\n  async function logout() {
     await signOutAdmin(); setAuthorized(false); setUser(null); setOrders([]); setItems([]); setProducts([]);
   }
 
@@ -161,7 +167,7 @@ export default function Admin() {
     </div>
     <div className="admin-tabs" role="tablist" aria-label="Розділи адмінпанелі">
       <button type="button" role="tab" aria-selected={tab === "orders"} className={tab === "orders" ? "is-active" : ""} onClick={() => setTab("orders")}>Замовлення ({orders.length})</button>
-      <button type="button" role="tab" aria-selected={tab === "products"} className={tab === "products" ? "is-active" : ""} onClick={() => setTab("products")}>Товари ({products.length})</button>
+      <button type="button" role="tab" aria-selected={tab === "products"} className={tab === "products" ? "is-active" : ""} onClick={() => setTab("products")}>Товари ({products.length})</button>\n      <button type="button" role="tab" aria-selected={tab === "categories"} className={tab === "categories" ? "is-active" : ""} onClick={() => setTab("categories")}>Категорії ({categories.length})</button>
     </div>
     {tab === "orders" ? <section className="admin-panel">
       <div className="admin-panel__head"><div><h2>Замовлення магазину</h2><p>Дані завантажуються безпосередньо з бази даних.</p></div><button className="btn btn--ghost btn--sm" onClick={loadDashboard} disabled={busy}>{busy ? "Оновлення…" : "↻ Оновити"}</button></div>
@@ -181,7 +187,7 @@ export default function Admin() {
   </div>;
 }
 
-function ProductRow({ product, saving, onSave }) {
+function slugify(value) {\n  const map = { а:"a", б:"b", в:"v", г:"h", ґ:"g", д:"d", е:"e", є:"ye", ж:"zh", з:"z", и:"y", і:"i", ї:"yi", й:"y", к:"k", л:"l", м:"m", н:"n", о:"o", п:"p", р:"r", с:"s", т:"t", у:"u", ф:"f", х:"kh", ц:"ts", ч:"ch", ш:"sh", щ:"shch", ю:"yu", я:"ya", ь:"", ъ:"", ё:"yo", э:"e" };\n  return String(value).toLowerCase().split("").map((ch) => map[ch] ?? ch).join("").normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");\n}\n\nfunction CategoryRow({ category, saving, onSave }) {\n  const [name, setName] = useState(category.name);\n  const [slug, setSlug] = useState(category.slug);\n  const [active, setActive] = useState(category.is_active);\n  useEffect(() => { setName(category.name); setSlug(category.slug); setActive(category.is_active); }, [category]);\n  return <tr><td><input className="admin-cell-input" value={name} onChange={(e) => setName(e.target.value)} aria-label="Назва категорії" /></td><td><input className="admin-cell-input" value={slug} onChange={(e) => setSlug(e.target.value)} aria-label="Slug категорії" /></td><td>{category.parent_id ? "Підкатегорія" : "Основна"}</td><td><label className="admin-toggle"><input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />{active ? "Активна" : "Прихована"}</label></td><td><button className="btn btn--sm" disabled={saving || !name.trim() || !slug.trim()} onClick={() => onSave(category.id, { name: name.trim(), slug: slug.trim(), is_active: active })}>{saving ? "…" : "Зберегти"}</button></td></tr>;\n}\n\nfunction ProductRow({ product, saving, onSave }) {
   const [price, setPrice] = useState(String(product.price ?? ""));
   const [stock, setStock] = useState(String(product.stock_quantity ?? 0));
   const [active, setActive] = useState(Boolean(product.is_active));
