@@ -31,6 +31,16 @@ export default function Admin() {
   const [newProduct, setNewProduct] = useState({ name: "", slug: "", description: "", price: "", old_price: "", sku: "", image_url: "", category_id: "", stock_quantity: "0" });
   const [newCategory, setNewCategory] = useState({ name: "", slug: "", parent_id: "" });
   const [query, setQuery] = useState("");
+  const [orderSearch, setOrderSearch] = useState("");
+  const [orderStatusFilter, setOrderStatusFilter] = useState("all");
+  const [orderDateFilter, setOrderDateFilter] = useState("all");
+  const [showFilterSettings, setShowFilterSettings] = useState(false);
+  const [activeOrderFilters, setActiveOrderFilters] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("kitchen-shop-order-filters"));
+      return Array.isArray(saved) ? saved : ["search", "status", "date"];
+    } catch { return ["search", "status", "date"]; }
+  });
   const [saving, setSaving] = useState("");
 
   useEffect(() => { setPageSeo({ title: "Адмінпанель Kitchen Shop", description: "Захищене керування замовленнями та товарами Kitchen Shop.", path: "/admin" }); }, []);
@@ -85,7 +95,40 @@ export default function Admin() {
   useEffect(() => { if (authorized) loadDashboard(); }, [authorized, loadDashboard]);
 
   const filteredProducts = useMemo(() => products.filter((p) => (p.name || "").toLocaleLowerCase("uk-UA").includes(query.toLocaleLowerCase("uk-UA"))), [products, query]);
+  const filteredOrders = useMemo(() => {
+    const term = orderSearch.trim().toLocaleLowerCase("uk-UA");
+    const now = new Date();
+    return orders.filter((order) => {
+      if (activeOrderFilters.includes("search") && term) {
+        const haystack = [order.order_number, order.customer_name, order.phone, order.email, order.delivery_address]
+          .filter(Boolean).join(" ").toLocaleLowerCase("uk-UA");
+        if (!haystack.includes(term)) return false;
+      }
+      if (activeOrderFilters.includes("status") && orderStatusFilter !== "all" && order.status !== orderStatusFilter) return false;
+      if (activeOrderFilters.includes("date") && orderDateFilter !== "all") {
+        const created = new Date(order.created_at);
+        const days = orderDateFilter === "today" ? 0 : Number(orderDateFilter);
+        const start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+        if (days === 0) {
+          if (created < start) return false;
+        } else {
+          start.setDate(start.getDate() - days + 1);
+          if (created < start) return false;
+        }
+      }
+      return true;
+    });
+  }, [orders, orderSearch, orderStatusFilter, orderDateFilter, activeOrderFilters]);
   const total = orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
+
+  function toggleOrderFilter(filter) {
+    setActiveOrderFilters((current) => {
+      const next = current.includes(filter) ? current.filter((item) => item !== filter) : [...current, filter];
+      localStorage.setItem("kitchen-shop-order-filters", JSON.stringify(next));
+      return next;
+    });
+  }
   const itemsByOrder = useMemo(() => items.reduce((map, item) => {
     (map[item.order_id] ||= []).push(item);
     return map;
@@ -200,9 +243,23 @@ export default function Admin() {
     {notice && <p className="admin-message admin-message--success" role="status">{notice}</p>}
     {tab === "orders" ? <section className="admin-panel">
       <div className="admin-panel__head"><div><h2>Замовлення магазину</h2><p>Дані завантажуються безпосередньо з бази даних.</p></div><button className="btn btn--ghost btn--sm" onClick={loadDashboard} disabled={busy}>{busy ? "Оновлення…" : "↻ Оновити"}</button></div>
+      <div className="admin-order-filter-tools">
+        <button type="button" className="btn btn--ghost btn--sm" onClick={() => setShowFilterSettings((value) => !value)}>{showFilterSettings ? "Закрити налаштування фільтрів" : "⚙ Налаштувати фільтри"}</button>
+        {showFilterSettings && <div className="admin-filter-settings"><strong>Показувати фільтри</strong>
+          {[[ "search", "Пошук" ], [ "status", "Статус" ], [ "date", "Дата" ]].map(([key, label]) => <label key={key}><input type="checkbox" checked={activeOrderFilters.includes(key)} onChange={() => toggleOrderFilter(key)} />{label}</label>)}
+          <small>Вимкнений пункт можна будь-коли повернути тут.</small>
+        </div>}
+      </div>
+      <div className="admin-filters">
+        {activeOrderFilters.includes("search") && <input value={orderSearch} onChange={(e) => setOrderSearch(e.target.value)} placeholder="№ замовлення, клієнт, телефон…" aria-label="Пошук замовлень" />}
+        {activeOrderFilters.includes("status") && <select value={orderStatusFilter} onChange={(e) => setOrderStatusFilter(e.target.value)} aria-label="Фільтр за статусом"><option value="all">Усі статуси</option>{ORDER_STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select>}
+        {activeOrderFilters.includes("date") && <select value={orderDateFilter} onChange={(e) => setOrderDateFilter(e.target.value)} aria-label="Фільтр за датою"><option value="all">За весь час</option><option value="today">Сьогодні</option><option value="7">Останні 7 днів</option><option value="30">Останні 30 днів</option></select>}
+        <button type="button" className="btn btn--ghost btn--sm" onClick={() => { setOrderSearch(""); setOrderStatusFilter("all"); setOrderDateFilter("all"); }}>Скинути</button>
+      </div>
       {orders.length === 0 ? <div className="account-empty"><span>📭</span><h3>Замовлень поки немає</h3><p>Нові оформлення з сайту з’являтимуться тут автоматично.</p></div> :
+        filteredOrders.length === 0 ? <div className="admin-no-results">За вибраними фільтрами замовлень не знайдено.</div> :
         <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Замовлення</th><th>Покупець</th><th>Склад</th><th>Сума</th><th>Статус</th></tr></thead><tbody>
-          {orders.map((order) => <tr key={order.id}><td><strong>№ {order.order_number}</strong><small>{formatDate(order.created_at)}</small><small>{order.id.slice(0, 8)}</small></td><td><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email || "Email не вказано"}</small><small>{order.delivery_address || "Самовивіз / адресу не вказано"}</small></td><td>{(itemsByOrder[order.id] || []).map((item) => <small key={item.id}>{item.product_name} × {item.quantity} — {money(Number(item.line_total))}</small>)}{order.notes && <small>Коментар: {order.notes}</small>}</td><td><strong>{money(Number(order.total))}</strong></td><td><select aria-label={`Статус замовлення ${order.order_number}`} value={order.status} disabled={saving === order.id} onChange={(e) => updateOrder(order.id, e.target.value)}>{ORDER_STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></td></tr>)}
+          {filteredOrders.map((order) => <tr key={order.id}><td><strong>№ {order.order_number}</strong><small>{formatDate(order.created_at)}</small><small>{order.id.slice(0, 8)}</small></td><td><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email || "Email не вказано"}</small><small>{order.delivery_address || "Самовивіз / адресу не вказано"}</small></td><td>{(itemsByOrder[order.id] || []).map((item) => <small key={item.id}>{item.product_name} × {item.quantity} — {money(Number(item.line_total))}</small>)}{order.notes && <small>Коментар: {order.notes}</small>}</td><td><strong>{money(Number(order.total))}</strong></td><td><select aria-label={`Статус замовлення ${order.order_number}`} value={order.status} disabled={saving === order.id} onChange={(e) => updateOrder(order.id, e.target.value)}>{ORDER_STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></td></tr>)}
         </tbody></table></div>}
     </section> : tab === "products" ? <section className="admin-panel">
       <div className="admin-panel__head"><div><h2>Каталог товарів</h2><p>Створення товарів і редагування ціни, залишку та видимості.</p></div><button className="btn btn--sm" onClick={() => setShowProductForm((value) => !value)}>{showProductForm ? "Закрити форму" : "+ Додати товар"}</button></div>
