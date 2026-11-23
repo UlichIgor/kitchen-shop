@@ -29,7 +29,7 @@ export default function Account() {
     try {
       const [profiles, ownOrders] = await Promise.all([
         adminRequest(`profiles?select=display_name,phone&id=eq.${currentUser.id}`),
-        adminRequest("orders?select=*&order=created_at.desc&limit=50"),
+        adminRequest(`orders?select=*&user_id=eq.${currentUser.id}&status=neq.cancelled&order=created_at.desc&limit=50`),
       ]);
       setProfile({ name: profiles[0]?.display_name || currentUser.user_metadata?.full_name || "", phone: profiles[0]?.phone || "" });
       setOrders(ownOrders);
