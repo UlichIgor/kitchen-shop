@@ -6,6 +6,7 @@ import { adminRequest, getAuthUser, signInAdmin, signOutAdmin, signUpAdmin } fro
 
 const formatError = (error) => error?.message || "Не вдалося виконати запит.";
 const formatDate = (value) => value ? new Date(value).toLocaleString("uk-UA") : "—";
+const ORDER_STATUS_LABELS = { pending: "Очікує підтвердження", confirmed: "Підтверджено", processing: "Обробляється", shipped: "Відправлено", delivered: "Доставлено", cancelled: "Скасовано" };
 
 export default function Account() {
   const [user, setUser] = useState(null);
@@ -91,6 +92,27 @@ export default function Account() {
     finally { setBusy(false); }
   }
 
+  async function cancelOrder(order) {
+    if (!window.confirm(`Скасувати замовлення №${order.order_number}? Цю дію буде передано менеджеру магазину.`)) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await adminRequest("rpc/cancel_my_order", {
+        method: "POST",
+        headers: { Prefer: "return=minimal" },
+        body: JSON.stringify({ p_order_id: order.id }),
+      });
+      setNotice(`Замовлення №${order.order_number} скасовано.`);
+      await loadAccount(user);
+    } catch (err) {
+      const message = err?.message || "";
+      setError(message.includes("ORDER_CANNOT_BE_CANCELLED")
+        ? "Це замовлення вже передано в обробку, тому скасувати його через кабінет не можна. Зверніться до менеджера."
+        : message.includes("ORDER_NOT_FOUND")
+          ? "Замовлення не знайдено або воно не належить цьому акаунту."
+          : formatError(err));
+    } finally { setBusy(false); }
+  }
+
   async function logout() {
     await signOutAdmin();
     setUser(null); setOrders([]); setOrderItems([]); setProfile({ name: "", phone: "" });
@@ -130,7 +152,8 @@ export default function Account() {
             <div className="account-order-list">{orders.map((order) => <article className="account-order" key={order.id}>
               <div className="account-order__top"><strong>№ {order.order_number}</strong><time>{formatDate(order.created_at)}</time></div>
               {(itemsByOrder[order.id] || []).map((item) => <p key={item.id}>{item.product_name} × {item.quantity} — {money(Number(item.line_total))}</p>)}
-              <div className="account-order__bottom"><span className="account-local-status">{order.status}</span><b>{money(Number(order.total))}</b></div>
+              <div className="account-order__bottom"><span className="account-local-status">{ORDER_STATUS_LABELS[order.status] || order.status}</span><b>{money(Number(order.total))}</b></div>
+              {["pending", "confirmed"].includes(order.status) && <button type="button" className="btn btn--ghost btn--sm account-order__cancel" disabled={busy} onClick={() => cancelOrder(order)}>{busy ? "Зачекайте…" : "Скасувати замовлення"}</button>}
             </article>)}</div>}
         </section>
       </div>
