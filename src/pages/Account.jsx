@@ -60,8 +60,16 @@ export default function Account() {
     const refreshOrders = async () => {
       if (refreshing || document.visibilityState === "hidden") return;
       refreshing = true;
-      try { await loadAccount(user, { silent: true }); }
-      finally { refreshing = false; }
+      try {
+        const freshOrders = await adminRequest(`orders?select=*&user_id=eq.${user.id}&status=neq.cancelled&order=created_at.desc&limit=50`);
+        setOrders(freshOrders);
+        if (freshOrders.length) {
+          const ids = freshOrders.map((order) => order.id).join(",");
+          setOrderItems(await adminRequest(`order_items?select=*&order_id=in.(${ids})&order=created_at.asc`));
+        } else setOrderItems([]);
+      } catch (err) {
+        setError(formatError(err));
+      } finally { refreshing = false; }
     };
     const intervalId = window.setInterval(refreshOrders, 5000);
     window.addEventListener("focus", refreshOrders);
