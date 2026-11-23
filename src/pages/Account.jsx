@@ -24,8 +24,8 @@ export default function Account() {
 
   useEffect(() => { setPageSeo({ title: "Мій кабінет", description: "Особистий кабінет Kitchen Shop: контактні дані та історія замовлень.", path: "/account" }); }, []);
 
-  const loadAccount = useCallback(async (currentUser) => {
-    setLoading(true);
+  const loadAccount = useCallback(async (currentUser, { silent = false } = {}) => {
+    if (!silent) setLoading(true);
     try {
       const [profiles, ownOrders] = await Promise.all([
         adminRequest(`profiles?select=display_name,phone&id=eq.${currentUser.id}`),
@@ -38,7 +38,7 @@ export default function Account() {
         setOrderItems(await adminRequest(`order_items?select=*&order_id=in.(${ids})&order=created_at.asc`));
       } else setOrderItems([]);
     } catch (err) { setError(formatError(err)); }
-    finally { setLoading(false); }
+    finally { if (!silent) setLoading(false); }
   }, []);
 
   useEffect(() => {
@@ -51,6 +51,25 @@ export default function Account() {
     }).catch((err) => { if (alive) { setError(formatError(err)); setLoading(false); } });
     return () => { alive = false; };
   }, [loadAccount]);
+
+  // Перевіряємо статуси замовлень у фоні: якщо менеджер скасував замовлення,
+  // воно зникне з відкритого кабінету без перезавантаження сторінки.
+  useEffect(() => {
+    if (!user) return undefined;
+    let refreshing = false;
+    const refreshOrders = async () => {
+      if (refreshing || document.visibilityState === "hidden") return;
+      refreshing = true;
+      try { await loadAccount(user, { silent: true }); }
+      finally { refreshing = false; }
+    };
+    const intervalId = window.setInterval(refreshOrders, 5000);
+    window.addEventListener("focus", refreshOrders);
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshOrders);
+    };
+  }, [user, loadAccount]);
 
   async function authenticate(event) {
     event.preventDefault();
