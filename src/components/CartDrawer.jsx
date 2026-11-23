@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { money } from "../data/catalog.js";
 import { useCart } from "../context/CartContext.jsx";
 import ProductImage from "./ProductImage.jsx";
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../lib/supabase.js";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, getStoredSession } from "../lib/supabase.js";
 
 const EMPTY_FORM = { name: "", phone: "", address: "", comment: "" };
 const MANAGER_WHATSAPP = "380980998127";
@@ -59,9 +59,14 @@ export default function CartDrawer() {
     setSubmitting(true);
     setErrors({});
     try {
+      const session = getStoredSession();
       const response = await fetch(`${SUPABASE_URL}/functions/v1/create-order`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", apikey: SUPABASE_PUBLISHABLE_KEY },
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({
           requestId,
           customer: { name: form.name, phone: form.phone, address: form.address, comment: form.comment },
