@@ -95,10 +95,12 @@ export default function Admin() {
   useEffect(() => { if (authorized) loadDashboard(); }, [authorized, loadDashboard]);
 
   const filteredProducts = useMemo(() => products.filter((p) => (p.name || "").toLocaleLowerCase("uk-UA").includes(query.toLocaleLowerCase("uk-UA"))), [products, query]);
+  const cancelledOrders = useMemo(() => orders.filter((order) => order.status === "cancelled"), [orders]);
   const filteredOrders = useMemo(() => {
     const term = orderSearch.trim().toLocaleLowerCase("uk-UA");
     const now = new Date();
     return orders.filter((order) => {
+      if (order.status === "cancelled") return false;
       if (activeOrderFilters.includes("search") && term) {
         const haystack = [order.order_number, order.customer_name, order.phone, order.email, order.delivery_address]
           .filter(Boolean).join(" ").toLocaleLowerCase("uk-UA");
@@ -237,6 +239,7 @@ export default function Admin() {
     </div>
     <div className="admin-tabs" role="tablist" aria-label="Розділи адмінпанелі">
       <button type="button" role="tab" aria-selected={tab === "orders"} className={tab === "orders" ? "is-active" : ""} onClick={() => setTab("orders")}>Замовлення ({orders.length})</button>
+      <button type="button" role="tab" aria-selected={tab === "cancelled"} className={tab === "cancelled" ? "is-active" : ""} onClick={() => setTab("cancelled")}>Скасовані ({cancelledOrders.length})</button>
       <button type="button" role="tab" aria-selected={tab === "products"} className={tab === "products" ? "is-active" : ""} onClick={() => setTab("products")}>Товари ({products.length})</button>
       <button type="button" role="tab" aria-selected={tab === "categories"} className={tab === "categories" ? "is-active" : ""} onClick={() => setTab("categories")}>Категорії ({categories.length})</button>
     </div>
@@ -260,6 +263,12 @@ export default function Admin() {
         filteredOrders.length === 0 ? <div className="admin-no-results">За вибраними фільтрами замовлень не знайдено.</div> :
         <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Замовлення</th><th>Покупець</th><th>Склад</th><th>Сума</th><th>Статус</th></tr></thead><tbody>
           {filteredOrders.map((order) => <tr key={order.id}><td><strong>№ {order.order_number}</strong><small>{formatDate(order.created_at)}</small><small>{order.id.slice(0, 8)}</small></td><td><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email || "Email не вказано"}</small><small>{order.delivery_address || "Самовивіз / адресу не вказано"}</small></td><td>{(itemsByOrder[order.id] || []).map((item) => <small key={item.id}>{item.product_name} × {item.quantity} — {money(Number(item.line_total))}</small>)}{order.notes && <small>Коментар: {order.notes}</small>}</td><td><strong>{money(Number(order.total))}</strong></td><td><select aria-label={`Статус замовлення ${order.order_number}`} value={order.status} disabled={saving === order.id} onChange={(e) => updateOrder(order.id, e.target.value)}>{ORDER_STATUSES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></td></tr>)}
+        </tbody></table></div>}
+    </section> : tab === "cancelled" ? <section className="admin-panel">
+      <div className="admin-panel__head"><div><h2>Скасовані замовлення</h2><p>Замовлення, скасовані менеджером або покупцем. Записи зберігаються в базі для історії.</p></div><button className="btn btn--ghost btn--sm" onClick={loadDashboard} disabled={busy}>{busy ? "Оновлення…" : "↻ Оновити"}</button></div>
+      {cancelledOrders.length === 0 ? <div className="account-empty"><span>📭</span><h3>Скасованих замовлень немає</h3><p>Коли менеджер скасує замовлення, воно з’явиться в цьому розділі.</p></div> :
+        <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Замовлення</th><th>Покупець</th><th>Склад</th><th>Сума</th><th>Статус</th></tr></thead><tbody>
+          {cancelledOrders.map((order) => <tr key={order.id}><td><strong>№ {order.order_number}</strong><small>{formatDate(order.created_at)}</small><small>{order.id.slice(0, 8)}</small></td><td><strong>{order.customer_name}</strong><small>{order.phone}</small><small>{order.email || "Email не вказано"}</small><small>{order.delivery_address || "Самовивіз / адресу не вказано"}</small></td><td>{(itemsByOrder[order.id] || []).map((item) => <small key={item.id}>{item.product_name} × {item.quantity} — {money(Number(item.line_total))}</small>)}{order.notes && <small>Коментар: {order.notes}</small>}</td><td><strong>{money(Number(order.total))}</strong></td><td><span className="account-local-status">Скасовано</span></td></tr>)}
         </tbody></table></div>}
     </section> : tab === "products" ? <section className="admin-panel">
       <div className="admin-panel__head"><div><h2>Каталог товарів</h2><p>Створення товарів і редагування ціни, залишку та видимості.</p></div><button className="btn btn--sm" onClick={() => setShowProductForm((value) => !value)}>{showProductForm ? "Закрити форму" : "+ Додати товар"}</button></div>
