@@ -78,3 +78,12 @@
 .admin-editor--category { grid-template-columns:repeat(4,minmax(0,1fr)); align-items:end; }
 .admin-editor > .btn { justify-self:start; align-self:end; }
 @media (max-width:760px) { .admin-editor, .admin-editor--category { grid-template-columns:1fr; } .admin-editor__wide { grid-column:auto; } }
+
+.account-order__cancel { margin-top:12px; }
+.admin-order-filter-tools { display:flex; justify-content:flex-end; margin:0 0 10px; }
+.admin-filter-settings { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:12px 14px; border:1px solid $c-border; border-radius:$radius-sm; background:$c-bg; }
+.admin-filter-settings strong { font-size:.84rem; }
+.admin-filter-settings label { display:flex; align-items:center; gap:6px; font-size:.84rem; }
+.admin-filter-settings input { accent-color:$c-primary; }
+.admin-filter-settings small { width:100%; color:$c-muted; font-size:.76rem; }
+.admin-order-filter-tools { position:relative; }
